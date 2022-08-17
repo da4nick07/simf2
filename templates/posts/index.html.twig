@@ -12,7 +12,8 @@
     <h1>Привет! ✅</h1>
 
     {% for post in posts %}
-        <p>&nbsp;{{ post.title }} </p>
+        <p><b>{{ post.title }}</b></p>
+        <p>&nbsp;&nbsp{{ post.body }} </p>
     {% endfor %}
 </div>
 
