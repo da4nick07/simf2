@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class PostType extends AbstractType
 {
@@ -15,12 +16,22 @@ class PostType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, [
-                'label' => ''
+                'label' => 'Заголовок* :',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Введите заголовок...',
+                    ])
+                ]
             ])
             ->add('body', TextareaType::class, [
-                'label' => ' '
-            ])
-        ;    }
+                'label' => 'Текст статьи* :',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Введите текст статьи...',
+                    ])
+                ]
+            ]);
+    }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
