@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Form\PostType;
 use App\Repository\PostRepository;
+use DateTimeImmutable;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Post;
@@ -26,4 +29,62 @@ class PostsController extends AbstractController
         return $this->render('posts/show.html.twig', [
             'post' => $post
         ]);
-    }}
+    }
+
+    #[Route('/posts/new', name: 'post_new', priority: 1)]
+    public function addPost(Request $request, ManagerRegistry $doctrine): Response
+    {
+        $post = new Post();
+        $form = $this->createForm(PostType::class, $post);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $post->setCreatedAt(new DateTimeImmutable());
+
+            $em = $doctrine->getManager();
+            $em->persist($post);
+            $em->flush();
+            // возврат к общему списку
+//            return $this->redirectToRoute('app_posts');
+            // а хочется увидеть сохранённое
+            return $this->redirectToRoute('post_show', [
+                'id' => $post->getId()
+            ]);
+
+        }
+        return $this->render('posts/new.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/posts/{id}/edit', name: 'post_edit')]
+    public function edit(Post $post, Request $request, ManagerRegistry $doctrine): Response
+    {
+        $form = $this->createForm(PostType::class, $post);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $doctrine->getManager();
+            $em->flush();
+
+            return $this->redirectToRoute('post_show', [
+                'id' => $post->getId()
+            ]);
+        }
+
+        return $this->render('posts/new.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/posts/{id}/delete', name: 'post_delete')]
+    public function delete(Post $post, ManagerRegistry $doctrine): Response
+    {
+        $em = $doctrine->getManager();
+        $em->remove($post);
+        $em->flush();
+
+        return $this->redirectToRoute('app_posts');
+    }
+
+}
