@@ -7,6 +7,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Post;
 
 class PostsController extends AbstractController
 {
@@ -18,4 +19,11 @@ class PostsController extends AbstractController
             'posts' => $postRepository->findAll(),
         ]);
     }
-}
+
+    #[Route('/posts/{id}', name: 'post_show')]
+    public function post(Post $post)
+    {
+        return $this->render('posts/show.html.twig', [
+            'post' => $post
+        ]);
+    }}
