@@ -19,16 +19,16 @@ class Post
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $body = null;
-/*
-    #[ORM\Column(length: 255)]
-    private ?string $slug = null;
+
+//    #[ORM\Column(length: 255)]
+//    private ?string $slug = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\Column]
-    private ?int $author = null;
-*/
+//    #[ORM\Column]
+//    private ?int $author = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -73,6 +73,11 @@ class Post
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created_at;
+    }
+
+    public function getCreatedAtStr( string $format): ?string
+    {
+        return $this->getCreatedAt()->format($format);
     }
 
     public function setCreatedAt(\DateTimeImmutable $created_at): self
