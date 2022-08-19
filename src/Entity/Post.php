@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PostRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use DateTimeImmutable;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
@@ -20,11 +21,11 @@ class Post
     #[ORM\Column(type: Types::TEXT)]
     private ?string $body = null;
 
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
+    private ?DateTimeImmutable $created_at = null;
+
 //    #[ORM\Column(length: 255)]
 //    private ?string $slug = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
 
 //    #[ORM\Column]
 //    private ?int $author = null;
