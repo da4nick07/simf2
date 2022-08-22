@@ -24,15 +24,27 @@ class PostsController extends AbstractController
     }
 
     #[Route('/posts/{id}', name: 'post_show')]
-    public function post(Post $post)
+    // ParamConverter штука интересная, но получить безликое и неуправляемое 404 "Страница не найдена"... Не хочу
+//    public function post(Post $post)
+    public function post(int $id, PostRepository $postRepository): Response
     {
+        $post = $postRepository->find($id);
+        if (!$post) {
+            // исключение можно и своё бросить...
+            throw $this->createNotFoundException(
+                'Статья не найдена, id '.$id
+            );
+        }
+
         return $this->render('posts/show.html.twig', [
             'post' => $post
         ]);
     }
 
     #[Route('/posts/new', name: 'post_new', priority: 1)]
-    public function addPost(Request $request, ManagerRegistry $doctrine): Response
+    // Оставил как пример техн. возможности. Жизнь длинная...
+//    public function addPost(Request $request, ManagerRegistry $doctrine): Response
+    public function addPost(Request $request, PostRepository $postRepository): Response
     {
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
@@ -40,10 +52,14 @@ class PostsController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $post->setCreatedAt(new DateTimeImmutable());
-
+/*
+    // Оставил как пример техн. возможности. Жизнь длинная...
             $em = $doctrine->getManager();
             $em->persist($post);
             $em->flush();
+*/
+            $postRepository->add( $post, true);
+
             // возврат к общему списку
 //            return $this->redirectToRoute('app_posts');
             // а хочется увидеть сохранённое
@@ -58,8 +74,15 @@ class PostsController extends AbstractController
     }
 
     #[Route('/posts/{id}/edit', name: 'post_edit')]
-    public function edit(Post $post, Request $request, ManagerRegistry $doctrine): Response
+    public function edit(int $id, Request $request, ManagerRegistry $doctrine): Response
     {
+        $post = $doctrine->getRepository( Post::class)->find($id);
+        if (!$post) {
+            throw $this->createNotFoundException(
+                'Статья не найдена, id '.$id
+            );
+        }
+
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
@@ -78,13 +101,27 @@ class PostsController extends AbstractController
     }
 
     #[Route('/posts/{id}/delete', name: 'post_delete')]
-    public function delete(Post $post, ManagerRegistry $doctrine): Response
+    public function delete(int $id, PostRepository $postRepository): Response
     {
-        $em = $doctrine->getManager();
-        $em->remove($post);
-        $em->flush();
+        $post = $postRepository->find($id);
+        if (!$post) {
+            throw $this->createNotFoundException(
+                'Статья не найдена, id '.$id
+            );
+        }
+        $postRepository->remove( $post, true);
 
         return $this->redirectToRoute('app_posts');
     }
 
+    #[Route('/posts/search', name: 'post_search', priority: 1)]
+    public function search(Request $request, PostRepository $postRepository): Response
+    {
+        $value = (string)$request->query->get('t');
+        $posts = $postRepository->findByTitle($value);
+
+        return $this->render('posts/search.html.twig', [
+            'posts' => $posts
+        ]);
+    }
 }

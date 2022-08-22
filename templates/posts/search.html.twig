@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Результаты поиска{% endblock %}
+
+{% block body %}
+    {% for post in posts %}
+        <p><b><a href="{{ path('post_show', {'id': post.id}) }}">{{ post.title }}</a></b></p>
+        <p>&nbsp;&nbsp{{ post.body }} </p>
+        <a href="{{ path('post_edit', {'id': post.id}) }}">Редактировать</a>
+        &nbsp;&nbsp;<a href="{{ path('post_delete', {'id': post.id}) }}">Удалить</a>
+    {% endfor %}
+    <div>
+        <a href="{{ path('app_posts') }}">На главную</a>
+    </div>
+{% endblock %}

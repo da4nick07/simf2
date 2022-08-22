@@ -9,6 +9,11 @@
 <div class="example-wrapper">
     <h1>Привет! ✅</h1>
 
+    <form class="form-inline my-2 my-lg-0" action="{{ path('post_search') }}" method="get">
+        <input class="form-control mr-sm-2" type="search" aria-label="Search" name="t">
+        <button class="btn btn-default my-2 my-sm-0" type="submit">Найти.</button>
+    </form>
+
     {% for post in posts %}
         <p><b><a href="{{ path('post_show', {'id': post.id}) }}">{{ post.title }}</a></b></p>
         <p>&nbsp;&nbsp{{ post.body }} </p>
