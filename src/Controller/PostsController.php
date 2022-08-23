@@ -16,6 +16,7 @@ class PostsController extends AbstractController
 {
 
     #[Route('/posts', name: 'app_posts')]
+    #[Route('/', name: 'homepage')]
     public function index(PostRepository $postRepository): Response
     {
         return $this->render('posts/index.html.twig', [

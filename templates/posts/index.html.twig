@@ -9,6 +9,12 @@
 <div class="example-wrapper">
     <h1>Привет! ✅</h1>
 
+    {% if app.user %}
+        Привет, {{app.user.email}}  | <a href={{ path('app_logout') }}>Выйти</a>
+    {% else %}
+        <a href={{ path('app_login') }}>Войти</a> | <a href={{ path('app_register') }}>Зарегестрироваться</a>
+    {% endif %}
+
     <form class="form-inline my-2 my-lg-0" action="{{ path('post_search') }}" method="get">
         <input class="form-control mr-sm-2" type="search" aria-label="Search" name="t">
         <button class="btn btn-default my-2 my-sm-0" type="submit">Найти.</button>
