@@ -9,7 +9,7 @@
     <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     #}
         <div>
-            <span  style="background:indianred">Неверный логин / пароль.</span >
+            <span  style="background:indianred">{{ error.messageKey|trans(error.messageData, 'security') }}</span >
         </div>
     {% endif %}
 

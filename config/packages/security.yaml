@@ -36,9 +36,12 @@ security:
                 target: homepage
 
             # сконфигурировать максимум попыток входа за заданный период времени
-            login_throttling:
-                max_attempts: 3
-                interval: '15 minutes'
+ #           login_throttling:
+ #               max_attempts: 3
+ #               interval: '15 minutes'
+
+            pattern: ^/
+            user_checker: App\Security\UserChecker
 
         secured_area:
             form_login:

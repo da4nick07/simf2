@@ -104,8 +104,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    public function geEnabled(): bool
+    public function isEnabled(): bool
     {
         return $this->enabled;
+    }
+
+    public function setEnabled(): self
+    {
+        $this->enabled = true;
+
+        return $this;
     }
 }
