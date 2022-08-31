@@ -22,7 +22,7 @@ class Hello2Command extends Command
         // описание команды, отображаемое при запуске "php bin/console list"
         protected static $defaultDescription = 'Приветствие.';
     */
-    private const DEFAULT_USERNAME = '';
+    private const DEFAULT_USERNAME = null;
 
     protected function configure(): void
     {
@@ -60,6 +60,8 @@ class Hello2Command extends Command
         $username = $input->getArgument('username');
         if ( $username === static::DEFAULT_USERNAME) {
             $output->writeln('Не указано имя!');
+        } elseif ( $username === '' ) {
+            $output->writeln('Вы не указали имя!');
         } else {
             $output->writeln('Привет, привет 2 ' . $username . '...!');
         }
