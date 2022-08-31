@@ -3,6 +3,7 @@ namespace App\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -21,6 +22,8 @@ class Hello2Command extends Command
         // описание команды, отображаемое при запуске "php bin/console list"
         protected static $defaultDescription = 'Приветствие.';
     */
+    private const DEFAULT_USERNAME = '';
+
     protected function configure(): void
     {
         $this
@@ -30,15 +33,36 @@ class Hello2Command extends Command
 
             // сообщение помощи команды, отображаемое при запуске команды с опцией "--help"
             ->setHelp('Команда выводит приветствие 2...')
+//            ->addArgument('username', InputArgument::REQUIRED, 'The username of the user.')
+            ->addArgument('username', InputArgument::OPTIONAL, 'The username of the user.', static::DEFAULT_USERNAME)
         ;
     }
+
+    protected function interact(InputInterface $input, OutputInterface $output)
+    {
+        $b = $input->hasArgument('username');
+        if ( $b) {
+            $output->writeln('Аргумент username есть');
+        } else {
+            $output->writeln('Аргумента username нет');
+        }
+
+        $username = $input->getArgument('username');
+        if ( $username === static::DEFAULT_USERNAME) {
+            $questionHelper = $this->getHelper('question');
+            $username = $questionHelper->ask($input, $output, new Question('<info>Ваше имя: </info>'));
+            $input->setArgument('username', $username);
+        }
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $questionHelper = $this->getHelper('question');
-        $username = $questionHelper->ask($input, $output, new Question('<info>Ваше имя: </info>'));
-
-        $output->writeln('Привет, привет 2 ' . $username . '...!');
-
+        $username = $input->getArgument('username');
+        if ( $username === static::DEFAULT_USERNAME) {
+            $output->writeln('Не указано имя!');
+        } else {
+            $output->writeln('Привет, привет 2 ' . $username . '...!');
+        }
 
         // этот метод должен вернуть целое число с "кодом завершения"
         // команды. Вы также можете использовать это константы, чтобы сделать код более читаемым
