@@ -48,7 +48,8 @@ class Hello2Command extends Command
         }
 
         $username = $input->getArgument('username');
-        if ( $username === static::DEFAULT_USERNAME) {
+//        if ( $username === static::DEFAULT_USERNAME) {
+        if ( !isset($username) ) {
             $questionHelper = $this->getHelper('question');
             $username = $questionHelper->ask($input, $output, new Question('<info>Ваше имя: </info>'));
             $input->setArgument('username', $username);
@@ -58,10 +59,9 @@ class Hello2Command extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $username = $input->getArgument('username');
-        if ( $username === static::DEFAULT_USERNAME) {
+//        if ( $username === static::DEFAULT_USERNAME) {
+        if ( !isset($username)) {
             $output->writeln('Не указано имя!');
-        } elseif ( $username === '' ) {
-            $output->writeln('Вы не указали имя!');
         } else {
             $output->writeln('Привет, привет 2 ' . $username . '...!');
         }
