@@ -34,6 +34,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private $enabled = false;
 
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?Seller $seller = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -112,6 +115,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEnabled(): self
     {
         $this->enabled = true;
+
+        return $this;
+    }
+
+    public function getSeller(): ?Seller
+    {
+        return $this->seller;
+    }
+
+    public function setSeller(Seller $seller): self
+    {
+        // set the owning side of the relation if necessary
+        if ($seller->getUser() !== $this) {
+            $seller->setUser($this);
+        }
+
+        $this->seller = $seller;
 
         return $this;
     }
