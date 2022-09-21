@@ -29,16 +29,20 @@ class PostsController extends AbstractController
 //    public function post(Post $post)
     public function post(int $id, PostRepository $postRepository): Response
     {
-        $post = $postRepository->find($id);
+//        $post = $postRepository->find($id);
+        $post = $postRepository->findOneJoined($id);
+        // а как для списка ?!
         if (!$post) {
             // исключение можно и своё бросить...
             throw $this->createNotFoundException(
                 'Статья не найдена, id '.$id
             );
         }
+        $author = $post->getUser();
 
         return $this->render('posts/show.html.twig', [
-            'post' => $post
+            'post' => $post,
+            'author' => $author
         ]);
     }
 

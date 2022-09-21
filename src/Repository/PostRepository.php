@@ -64,6 +64,21 @@ class PostRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    // а как для списка ?!
+    //
+    public function findOneJoined( int $id): ?Post
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT p, u
+            FROM App\Entity\Post p
+            INNER JOIN p.user u
+            WHERE p.id = :id'
+        )->setParameter('id', $id);
+
+        return $query->getOneOrNullResult();
+    }
 //    public function findOneBySomeField($value): ?Post
 //    {
 //        return $this->createQueryBuilder('p')
