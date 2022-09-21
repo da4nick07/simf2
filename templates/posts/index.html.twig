@@ -24,6 +24,7 @@
         <p><b><a href="{{ path('post_show', {'id': post.id}) }}">{{ post.title }}</a></b></p>
         <p>&nbsp;&nbsp{{ post.body }} </p>
         <p> <i>&nbsp;&nbsp Дата публикации: {{ post.getCreatedAtStr('Y-m-d H:i:s') }} </i></p>
+        <p> <i>&nbsp;&nbsp Автор: {{ post.getUser().getEmail() }} </i></p>
     {% endfor %}
 </div>
 

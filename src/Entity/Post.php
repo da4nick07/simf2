@@ -24,6 +24,14 @@ class Post
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private ?DateTimeImmutable $created_at = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $User = null;
+
+//    #[ORM\ManyToOne]
+//    #[ORM\JoinColumn(nullable: false)]
+//    private ?User $User = null;
+
 //    #[ORM\Column(length: 255)]
 //    private ?string $slug = null;
 
@@ -89,15 +97,16 @@ class Post
         return $this;
     }
 
-    public function getAuthor(): ?int
+    public function getUser(): ?User
     {
-        return $this->author;
+        return $this->User;
     }
 
-    public function setAuthor(int $author): self
+    public function setUser(?User $User): self
     {
-        $this->author = $author;
+        $this->User = $User;
 
         return $this;
     }
+
 }
