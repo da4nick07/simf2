@@ -28,15 +28,8 @@ class Post
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-//    #[ORM\ManyToOne]
-//    #[ORM\JoinColumn(nullable: false)]
-//    private ?User $User = null;
-
 //    #[ORM\Column(length: 255)]
 //    private ?string $slug = null;
-
-//    #[ORM\Column]
-//    private ?int $author = null;
 
     public function getId(): ?int
     {
@@ -79,7 +72,6 @@ class Post
         return $this;
     }
 
- //   public function getCreatedAt(): ?\DateTimeImmutable
     public function getCreatedAt(): ?DateTimeImmutable
     {
         return $this->created_at;
