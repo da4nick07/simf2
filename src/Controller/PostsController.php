@@ -19,30 +19,29 @@ class PostsController extends AbstractController
     #[Route('/', name: 'homepage')]
     public function index(PostRepository $postRepository): Response
     {
+/*
         return $this->render('posts/index.html.twig', [
             'posts' => $postRepository->findAll(),
+        ]);
+*/
+        return $this->render('posts/index.html.twig', [
+            'posts' => $postRepository->findAllJoined()
         ]);
     }
 
     #[Route('/posts/{id}', name: 'post_show')]
     // ParamConverter штука интересная, но получить безликое и неуправляемое 404 "Страница не найдена"... Не хочу
-//    public function post(Post $post)
     public function post(int $id, PostRepository $postRepository): Response
     {
-//        $post = $postRepository->find($id);
         $post = $postRepository->findOneJoined($id);
-        // а как для списка ?!
         if (!$post) {
             // исключение можно и своё бросить...
             throw $this->createNotFoundException(
                 'Статья не найдена, id '.$id
             );
         }
-        $author = $post->getUser();
-
         return $this->render('posts/show.html.twig', [
-            'post' => $post,
-            'author' => $author
+            'post' => $post
         ]);
     }
 

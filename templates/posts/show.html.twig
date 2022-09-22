@@ -2,10 +2,8 @@
 {% block body %}
     <p><b>{{ post.title }}</b></p>
     <p>{{ post.body }}</p>
-    <p> <i>&nbsp;&nbsp Дата публикации: {{ post.getCreatedAtStr('Y-m-d H:i:s') }} </i></p>
-
-{#    <p> <i>&nbsp;&nbsp Автор: {{ post.getUser().getEmail() }} </i></p> #}
-    <p> <i>&nbsp;&nbsp Автор: {{ author.getEmail() }} </i></p>
+    <p> <i>&nbsp;&nbsp Автор: {{ post.email }} </i></p>
+    <p> <i>&nbsp;&nbsp Дата публикации: {{ post.created_at.format( 'Y-m-d H:i:s') }} </i></p>
 
     <a href="{{ path('post_edit', {'id': post.id}) }}">Редактировать</a>
     &nbsp;&nbsp;<a href="{{ path('post_delete', {'id': post.id}) }}">Удалить</a>

@@ -66,19 +66,33 @@ class PostRepository extends ServiceEntityRepository
 
     // а как для списка ?!
     //
-    public function findOneJoined( int $id): ?Post
+    public function findOneJoined( int $id): ?array
     {
         $entityManager = $this->getEntityManager();
 
         $query = $entityManager->createQuery(
-            'SELECT p, u
+            'SELECT p.id, p.title, p.body, p.created_at, u.email
             FROM App\Entity\Post p
             INNER JOIN p.user u
             WHERE p.id = :id'
         )->setParameter('id', $id);
 
-        return $query->getOneOrNullResult();
+        return $query->getOneOrNullResult(2);
     }
+
+    public function findAllJoined(): ?array
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT p.id, p.title, p.body, p.created_at, u.email
+            FROM App\Entity\Post p
+            INNER JOIN p.user u'
+        );
+
+        return $query->getResult(2);
+    }
+
 //    public function findOneBySomeField($value): ?Post
 //    {
 //        return $this->createQueryBuilder('p')
