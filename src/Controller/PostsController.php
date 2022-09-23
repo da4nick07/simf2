@@ -25,7 +25,7 @@ class PostsController extends AbstractController
         ]);
 */
         return $this->render('posts/index.html.twig', [
-            'posts' => $postRepository->findAllJoined()
+            'posts' => $postRepository->readAllJoined()
         ]);
     }
 
@@ -33,7 +33,7 @@ class PostsController extends AbstractController
     // ParamConverter штука интересная, но получить безликое и неуправляемое 404 "Страница не найдена"... Не хочу
     public function post(int $id, PostRepository $postRepository): Response
     {
-        $post = $postRepository->findOneJoined($id);
+        $post = $postRepository->readOneJoined($id);
         if (!$post) {
             // исключение можно и своё бросить...
             throw $this->createNotFoundException(

@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Post;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query;
 
 /**
  * @extends ServiceEntityRepository<Post>
@@ -66,7 +67,7 @@ class PostRepository extends ServiceEntityRepository
 
     // а как для списка ?!
     //
-    public function findOneJoined( int $id): ?array
+    public function readOneJoined( int $id): ?array
     {
         $entityManager = $this->getEntityManager();
 
@@ -74,23 +75,25 @@ class PostRepository extends ServiceEntityRepository
             'SELECT p.id, p.title, p.body, p.created_at, u.email
             FROM App\Entity\Post p
             INNER JOIN p.user u
-            WHERE p.id = :id'
-        )->setParameter('id', $id);
+            WHERE p.id = :id')
+            ->setHint(Query::HINT_READ_ONLY, true)
+            ->setParameter('id', $id);
 
-        return $query->getOneOrNullResult(2);
+        return $query->getOneOrNullResult(Query::HYDRATE_ARRAY);
     }
 
-    public function findAllJoined(): ?array
+    public function readAllJoined(): ?array
     {
         $entityManager = $this->getEntityManager();
 
         $query = $entityManager->createQuery(
             'SELECT p.id, p.title, p.body, p.created_at, u.email
             FROM App\Entity\Post p
-            INNER JOIN p.user u'
-        );
+            INNER JOIN p.user u')
+            ->setHint(Query::HINT_READ_ONLY, true);
 
-        return $query->getResult(2);
+
+        return $query->getResult(Query::HYDRATE_ARRAY);
     }
 
 //    public function findOneBySomeField($value): ?Post
