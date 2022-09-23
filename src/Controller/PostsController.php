@@ -19,11 +19,6 @@ class PostsController extends AbstractController
     #[Route('/', name: 'homepage')]
     public function index(PostRepository $postRepository): Response
     {
-/*
-        return $this->render('posts/index.html.twig', [
-            'posts' => $postRepository->findAll(),
-        ]);
-*/
         return $this->render('posts/index.html.twig', [
             'posts' => $postRepository->readAllJoined()
         ]);

@@ -56,22 +56,22 @@ class PostRepository extends ServiceEntityRepository
 //    }
 
 
-    public function findByTitle( $query)
+    public function findByTitle( $query): ?array
     {
-        return $this->createQueryBuilder('post')
-            ->andWhere('post.title LIKE :query')
-            ->setParameter('query', '%'. $query. '%')
-            ->getQuery()
-            ->getResult();
+        $query = $this->getEntityManager()->createQuery(
+            'SELECT p.id, p.title, p.body, p.created_at, u.email
+            FROM App\Entity\Post p
+            INNER JOIN p.user u
+            WHERE p.title LIKE :query')
+            ->setHint(Query::HINT_READ_ONLY, true)
+            ->setParameter('query', '%'. $query. '%');
+
+        return $query->getResult(Query::HYDRATE_ARRAY);
     }
 
-    // а как для списка ?!
-    //
     public function readOneJoined( int $id): ?array
     {
-        $entityManager = $this->getEntityManager();
-
-        $query = $entityManager->createQuery(
+        $query = $this->getEntityManager()->createQuery(
             'SELECT p.id, p.title, p.body, p.created_at, u.email
             FROM App\Entity\Post p
             INNER JOIN p.user u
@@ -84,9 +84,7 @@ class PostRepository extends ServiceEntityRepository
 
     public function readAllJoined(): ?array
     {
-        $entityManager = $this->getEntityManager();
-
-        $query = $entityManager->createQuery(
+        $query = $this->getEntityManager()->createQuery(
             'SELECT p.id, p.title, p.body, p.created_at, u.email
             FROM App\Entity\Post p
             INNER JOIN p.user u')
