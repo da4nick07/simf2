@@ -61,7 +61,7 @@ class PostRepository extends ServiceEntityRepository
         $query = $this->getEntityManager()->createQuery(
             'SELECT p.id, p.title, p.body, p.created_at, u.email
             FROM App\Entity\Post p
-            INNER JOIN p.user u
+            JOIN p.user u
             WHERE p.title LIKE :query')
 //            ->setHint(Query::HINT_READ_ONLY, true)
             ->setParameter('query', '%'. $query. '%');
@@ -74,13 +74,13 @@ class PostRepository extends ServiceEntityRepository
         $query = $this->getEntityManager()->createQuery(
             'SELECT p.id, p.title, p.body, p.created_at, u.email
             FROM App\Entity\Post p
-            INNER JOIN p.user u
+            JOIN p.user u
             WHERE p.id = :id')
 //            ->setHint(Query::HINT_READ_ONLY, true)
             ->setParameter('id', $id);
 
-//        return $query->getOneOrNullResult(Query::HYDRATE_SCALAR);
-        return $query->getScalarResult();
+        return $query->getOneOrNullResult(Query::HYDRATE_SCALAR);
+//        return $query->getScalarResult()[0];
     }
 
     public function readAllJoined(): ?array
@@ -88,7 +88,7 @@ class PostRepository extends ServiceEntityRepository
         $query = $this->getEntityManager()->createQuery(
             'SELECT p.id, p.title, p.body, p.created_at, u.email
             FROM App\Entity\Post p
-            INNER JOIN p.user u');
+            JOIN p.user u');
 //            ->setHint(Query::HINT_READ_ONLY, true);
 
 
