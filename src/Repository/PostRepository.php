@@ -63,10 +63,10 @@ class PostRepository extends ServiceEntityRepository
             FROM App\Entity\Post p
             INNER JOIN p.user u
             WHERE p.title LIKE :query')
-            ->setHint(Query::HINT_READ_ONLY, true)
+//            ->setHint(Query::HINT_READ_ONLY, true)
             ->setParameter('query', '%'. $query. '%');
 
-        return $query->getResult(Query::HYDRATE_ARRAY);
+        return $query->getScalarResult();
     }
 
     public function readOneJoined( int $id): ?array
@@ -76,10 +76,11 @@ class PostRepository extends ServiceEntityRepository
             FROM App\Entity\Post p
             INNER JOIN p.user u
             WHERE p.id = :id')
-            ->setHint(Query::HINT_READ_ONLY, true)
+//            ->setHint(Query::HINT_READ_ONLY, true)
             ->setParameter('id', $id);
 
-        return $query->getOneOrNullResult(Query::HYDRATE_ARRAY);
+//        return $query->getOneOrNullResult(Query::HYDRATE_SCALAR);
+        return $query->getScalarResult();
     }
 
     public function readAllJoined(): ?array
@@ -87,11 +88,13 @@ class PostRepository extends ServiceEntityRepository
         $query = $this->getEntityManager()->createQuery(
             'SELECT p.id, p.title, p.body, p.created_at, u.email
             FROM App\Entity\Post p
-            INNER JOIN p.user u')
-            ->setHint(Query::HINT_READ_ONLY, true);
+            INNER JOIN p.user u');
+//            ->setHint(Query::HINT_READ_ONLY, true);
 
 
-        return $query->getResult(Query::HYDRATE_ARRAY);
+//        return $query->getResult(Query::HYDRATE_ARRAY);
+//        return $query->getResult(Query::HYDRATE_SCALAR);
+        return $query->getScalarResult();
     }
 
 //    public function findOneBySomeField($value): ?Post
