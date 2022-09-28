@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Blog simf2{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </head>
+    <body>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col bg-success">
+                <h1> {% if header is not defined %} Блог на Symfony {% else %} {{header}} {% endif %} </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-8 mr-auto ml-auto bg-danger">
+                Второй блок
+            </div>
+        </div>
+    </div>
+
+    {#
+        {% block header %}
+            <div id = "header">
+                <h1> {% if header is not defined %} Блог на Symfony {% else %} {{header}} {% endif %} </h1>
+            </div>
+        {% endblock %}
+
+        <div id = "reg_block">
+            {% block find_block %}
+                <div>
+                    Блок поиска
+                </div>
+            {% endblock %}
+
+            {% block hi_block %}
+                <div id = "hi_block">
+                    {% if app.user %}
+                        Привет, {{app.user.email}}  | <a href={{ path('app_logout') }}>Выйти</a>
+                    {% else %}
+                        <a href={{ path('app_login') }}>Войти</a> | <a href={{ path('app_register') }}>Зарегестрироваться</a>
+                    {% endif %}
+                </div>
+            {% endblock %}
+        </div>
+
+        {% block content %}
+            <div id = "content">
+                Здесь д.б. контент
+            </div>
+        {% endblock %}
+
+        {% block footer %}
+            <div id = "footer">
+                Все права защищены (c) Блог на Symfony
+            </div>
+        {% endblock %}
+    #}
+    </body>
+</html>
