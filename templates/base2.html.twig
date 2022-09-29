@@ -16,17 +16,37 @@
     <body>
     <div class="container-fluid">
         <div class="row" style="height: 100px">
-            <div class="col text-center my-auto bg-success">
+            <div class="col text-center my-auto bg-info">
                 <h1> {% if header is not defined %} Блог на Symfony {% else %} {{header}} {% endif %} </h1>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-10 mx-auto border border-dark bg-danger ">
                 <div class="row">
-                    <div class="col-8 text-center my-auto border-start border-dark bg-success">
-                        Блок с поиском
+                    <div class="col-8 bg-info">
+                        <div class="row">
+                            <div class="col-sm-1">
+                            </div>
+                            <div class="col">
+                                <form class="row my-2">
+                                    <div class="col-sm-8 my-auto">
+                                        <label for="Search" class="visually-hidden">Пароль</label>
+                                        <input type="search" class="form-control" id="Search" placeholder="Поиск...">
+                                    </div>
+                                    <div class="col-auto my-auto">
+                                        <button type="submit" class="btn btn-primary">Найти</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+{#
+                        <form class="form-inline my-2" action="{{ path('post_search') }}" method="get">
+                            <input class="form-control" type="search" aria-label="Search" name="t">
+                            <button class="btn btn-default" type="submit">Найти.</button>
+                        </form>
+#}
                     </div>
-                    <div class="col-4 text-center border-end border-dark bg-success">
+                    <div class="col-4 text-center my-auto bg-info">
                         {% if app.user %}
                             Привет, {{app.user.email}}  | <a href={{ path('app_logout') }}>Выйти</a>
                         {% else %}
@@ -34,18 +54,18 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-8 border border-dark bg-primary" id = "content">
+                <div class="row border-top border-dark">
+                    <div class="col-8 bg-info" id = "content">
                         {% block content %}
                             Контент
                         {% endblock %}
                     </div>
-                    <div class="col-4 border border-dark bg-secondary">
+                    <div class="col-4 border-start border-dark bg-info">
                         Меню
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col text-center border border-dark bg-success">
+                <div class="row border-top border-dark">
+                    <div class="col text-center bg-info">
                         Все права защищены (c) Блог на Symfony
                     </div>
                 </div>
