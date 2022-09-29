@@ -58,10 +58,13 @@
                             Контент
                         {% endblock %}
                     </div>
-                    <div class="col-4 border-start border-dark bg-info" id = "menu">
-                        {% block menu %}
-                            Меню
-                        {% endblock %}
+                    <div class="col-4 my-2 border-start border-dark bg-info" id = "menu">
+                        <a href="{{ path('app_posts') }}">На главную</a>
+                        <div id = "user_menu">
+                            {% block user_menu %}
+
+                            {% endblock %}
+                        </div>
                     </div>
                 </div>
                 <div class="row border-top border-dark">
