@@ -25,9 +25,7 @@
                 <div class="row">
                     <div class="col-8 bg-info">
                         <div class="row">
-                            <div class="col-sm-1">
-                            </div>
-                            <div class="col">
+                            <div class="col offset-sm-1">
                                 <form class="row my-2">
                                     <div class="col-sm-8 my-auto">
                                         <label for="Search" class="visually-hidden">Пароль</label>
@@ -60,8 +58,10 @@
                             Контент
                         {% endblock %}
                     </div>
-                    <div class="col-4 border-start border-dark bg-info">
-                        Меню
+                    <div class="col-4 border-start border-dark bg-info" id = "menu">
+                        {% block menu %}
+                            Меню
+                        {% endblock %}
                     </div>
                 </div>
                 <div class="row border-top border-dark">
