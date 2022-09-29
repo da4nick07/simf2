@@ -14,32 +14,41 @@
         {% endblock %}
     </head>
     <body>
-{#
-    <div class="container">
-        <div class="row">
-            <div class="col-4 bg-success">1</div>
-            <div class="col-4 offset-4 bg-success">2</div>
-        </div>
-
-        <div class="row">
-            <div class="col-3 offset-3 bg-success">1</div>
-            <div class="col-3 offset-3 bg-success">2</div>
-        </div>
-
-        <div class="row">
-            <div class="col-6 offset-3 bg-success">1</div>
-        </div>
-    </div>
-#}
     <div class="container-fluid">
-        <div class="row">
-            <div class="col text-center bg-success">
+        <div class="row" style="height: 100px">
+            <div class="col text-center my-auto bg-success">
                 <h1> {% if header is not defined %} Блог на Symfony {% else %} {{header}} {% endif %} </h1>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-10 mx-auto bg-danger">
-                Второй блок
+            <div class="col-sm-10 mx-auto border border-dark bg-danger ">
+                <div class="row">
+                    <div class="col-8 text-center my-auto border-start border-dark bg-success">
+                        Блок с поиском
+                    </div>
+                    <div class="col-4 text-center border-end border-dark bg-success">
+                        {% if app.user %}
+                            Привет, {{app.user.email}}  | <a href={{ path('app_logout') }}>Выйти</a>
+                        {% else %}
+                            <a href={{ path('app_login') }}>Войти</a> | <a href={{ path('app_register') }}>Зарегестрироваться</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-8 border border-dark bg-primary" id = "content">
+                        {% block content %}
+                            Контент
+                        {% endblock %}
+                    </div>
+                    <div class="col-4 border border-dark bg-secondary">
+                        Меню
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col text-center border border-dark bg-success">
+                        Все права защищены (c) Блог на Symfony
+                    </div>
+                </div>
             </div>
         </div>
     </div>
