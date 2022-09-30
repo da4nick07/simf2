@@ -3,11 +3,8 @@
 {% block title %}Вход{% endblock %}
 
 {% block body %}
-    <h1>Вход на сайт</h1>
+    <h3>Вход на сайт</h3>
     {% if error %}
-    {#
-    <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    #}
         <div>
             <span  style="background:indianred">{{ error.messageKey|trans(error.messageData, 'security') }}</span >
         </div>
