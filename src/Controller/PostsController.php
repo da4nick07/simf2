@@ -19,12 +19,12 @@ class PostsController extends AbstractController
     #[Route('/', name: 'homepage')]
     public function index(PostRepository $postRepository): Response
     {
-/*
+
         return $this->render('posts/index2.html.twig', [
             'posts' => $postRepository->readAllJoined()
         ]);
-*/
-        return $this->render('base2.html.twig', );
+
+//        return $this->render('base2.html.twig', );
     }
 
     #[Route('/posts/{id}', name: 'post_show')]

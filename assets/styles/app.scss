@@ -1,1 +1,15 @@
 @import '~bootstrap/scss/bootstrap';
+/*
+// Неудачная попытка. Не красиво.
+.menu-min-width {
+  min-width: 150px;
+}
+*/
+#main-menu {
+  white-space: nowrap;
+}
+
+#user_menu {
+  background-color: white;
+
+}

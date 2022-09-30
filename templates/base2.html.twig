@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Blog simf2{% endblock %}</title>
@@ -53,12 +53,13 @@
                     </div>
                 </div>
                 <div class="row border-top border-dark">
-                    <div class="col-8 bg-info" id = "content">
+{#                     <div class="col-md-10 col-9 bg-info" id = "content"> #}
+                    <div class="col bg-info" id = "content">
                         {% block content %}
                             Контент
                         {% endblock %}
                     </div>
-                    <div class="col-4 my-2 border-start border-dark bg-info" id = "menu">
+                    <div class="col-md-2 col-3 my-2 border-start border-dark bg-info" id = "main-menu">
                         <a href="{{ path('app_posts') }}">На главную</a>
                         <div id = "user_menu">
                             {% block user_menu %}
