@@ -23,13 +23,13 @@
         <div class="row">
             <div class="col-sm-10 mx-auto border border-dark bg-danger ">
                 <div class="row">
-                    <div class="col-8 bg-info">
+                    <div class="col-8 bg-info" >
                         <div class="row">
                             <div class="col offset-sm-1">
-                                <form class="row my-2">
+                                <form class="row my-2" action="{{ path('post_search') }}" method="get">
                                     <div class="col-sm-8 my-auto">
-                                        <label for="Search" class="visually-hidden">Пароль</label>
-                                        <input type="search" class="form-control" id="Search" placeholder="Поиск...">
+                                        <label for="search" class="visually-hidden">Пароль</label>
+                                        <input type="search" class="form-control" id="search" placeholder="Поиск..."  name="t">
                                     </div>
                                     <div class="col-auto my-auto">
                                         <button type="submit" class="btn btn-primary">Найти</button>

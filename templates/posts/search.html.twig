@@ -1,15 +1,21 @@
-{% extends 'base.html.twig' %}
+{% extends 'base2.html.twig' %}
 
-{% block title %}Результаты поиска{% endblock %}
-
-{% block body %}
-    {% for post in posts %}
-        <p><b><a href="{{ path('post_show', {'id': post.id}) }}">{{ post.title }}</a></b></p>
-        <p>&nbsp;&nbsp{{ post.body }} </p>
-        <a href="{{ path('post_edit', {'id': post.id}) }}">Редактировать</a>
-        &nbsp;&nbsp;<a href="{{ path('post_delete', {'id': post.id}) }}">Удалить</a>
-    {% endfor %}
-    <div>
-        <a href="{{ path('app_posts') }}">На главную</a>
+{% block content %}
+    <div class="row">
+        <div class="col text-center my-auto">
+            <h2> Результаты поиска </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {% for post in posts %}
+                <p><b><a href="{{ path('post_show', {'id': post.id}) }}">{{ post.title }}</a></b></p>
+                <p>&nbsp;&nbsp{{ post.body }} </p>
+                <p> <i>&nbsp;&nbsp Автор: {{ post.email }} </i></p>
+                <p> <i>&nbsp;&nbsp Дата публикации: {{ post.created_at }} </i></p>
+                <a href="{{ path('post_edit', {'id': post.id}) }}">Редактировать</a>
+            &nbsp;&nbsp;    <a href="{{ path('post_delete', {'id': post.id}) }}">Удалить</a>
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}
