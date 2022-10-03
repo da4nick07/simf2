@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Post;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 class PostsController extends AbstractController
 {
@@ -19,9 +20,11 @@ class PostsController extends AbstractController
     #[Route('/', name: 'homepage')]
     public function index(PostRepository $postRepository): Response
     {
+        $showInsert = $this->isGranted('ROLE_ADMIN');
 
         return $this->render('posts/index2.html.twig', [
-            'posts' => $postRepository->readAllJoined()
+            'posts' => $postRepository->readAllJoined(),
+            'showInsert' => $showInsert
         ]);
 
 //        return $this->render('base2.html.twig', );
@@ -44,6 +47,9 @@ class PostsController extends AbstractController
     }
 
     #[Route('/posts/new', name: 'post_new', priority: 1)]
+    // будет переадресация на 'app_login'
+    // пока оставил так
+    #[IsGranted("ROLE_ADMIN")]
     // Оставил как пример техн. возможности. Жизнь длинная...
 //    public function addPost(Request $request, ManagerRegistry $doctrine): Response
     public function addPost(Request $request, PostRepository $postRepository): Response
@@ -54,6 +60,9 @@ class PostsController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $post->setCreatedAt(new DateTimeImmutable());
+//            /** @var \App\Entity\User $user */
+//            $user = $this->getUser();
+            $post->setUser($this->getUser());
 /*
     // Оставил как пример техн. возможности. Жизнь длинная...
             $em = $doctrine->getManager();

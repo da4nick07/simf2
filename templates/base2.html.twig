@@ -44,7 +44,7 @@
 #}
                     </div>
                     <div class="col-4 text-center my-auto bg-info">
-                        {% if app.user %}
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                             Привет, {{app.user.email}}  | <a href={{ path('app_logout') }}>Выйти</a>
                         {% else %}
                             <a href={{ path('app_login') }}>Войти</a> | <a href={{ path('app_register') }}>Зарегестрироваться</a>
@@ -58,13 +58,20 @@
                             Контент
                         {% endblock %}
                     </div>
-                    <div class="col-md-2 col-3 my-2 border-start border-dark bg-info" id = "main-menu">
-                        <a href="{{ path('app_posts') }}">На главную</a>
-                        <div id = "user_menu">
-                            {% block user_menu %}
+                    <div class="col-md-2 col-3 my-2 border-start border-dark menu-min-width bg-info" id = "main-menu">
+                        <ul>
+                            <li><a href="{{ path('app_posts') }}">На главную</a></li>
+                            {% if app.user %}
+                                {% if (showInsert is defined) and (showInsert) %}
+                                        <li><a href="{{ path('post_new') }}">Добавить</a></li>
+                                {% endif %}
+                            {% endif %}
+                            <div id = "user_menu">
+                                {% block user_menu %}
 
-                            {% endblock %}
-                        </div>
+                                {% endblock %}
+                            </div>
+                        </ul>
                     </div>
                 </div>
                 <div class="row border-top border-dark">
