@@ -73,9 +73,8 @@ class PostsController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $post->setCreatedAt(new DateTimeImmutable());
-//            /** @var \App\Entity\User $user */
-//            $user = $this->getUser();
+////            /** @var \App\Entity\User $user */
+////            $user = $this->getUser();
             $post->setUser($this->getUser());
 /*
     // Оставил как пример техн. возможности. Жизнь длинная...

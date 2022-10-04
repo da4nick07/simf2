@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use DateTimeImmutable;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Post
 {
     #[ORM\Id]
@@ -30,6 +31,17 @@ class Post
 
 //    #[ORM\Column(length: 255)]
 //    private ?string $slug = null;
+
+    #[ORM\PrePersist]
+    public function setDefaultValue()
+    {
+        $this->setCreatedAt(new DateTimeImmutable());
+        // А не работает...
+//            /** @var \App\Entity\User $user */
+//            $user = $this->getUser();
+//        $this->setUser($this->getUser());
+//        $this->setUser($user);
+    }
 
     public function getId(): ?int
     {
