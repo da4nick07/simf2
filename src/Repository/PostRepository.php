@@ -56,40 +56,82 @@ class PostRepository extends ServiceEntityRepository
 //    }
 
 
-    public function findByTitle( $query): ?array
+    public function findByTitle( $tpl): ?array
     {
+/*
         $query = $this->getEntityManager()->createQuery(
             'SELECT p.id, p.title, p.body, p.created_at, u.email
             FROM App\Entity\Post p
             JOIN p.user u
             WHERE p.title LIKE :query')
-//            ->setHint(Query::HINT_READ_ONLY, true)
-            ->setParameter('query', '%'. $query. '%');
+            ->setHint(Query::HINT_READ_ONLY, true)
+            ->setParameter('query', '%'. $tpl. '%');
 
         return $query->getScalarResult();
+*/
+        $conn = $this->getEntityManager()->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT p.id, p.title, p.body, p.created_at, u.email
+            FROM post p
+            JOIN user u ON p.user_id = u.id
+            WHERE p.title LIKE :q');
+        $res = $stmt->executeQuery(['q' => '%'. $tpl. '%']);
+
+        // возвращает массив массивов (т.e. сырой набор данных)
+        return $res->fetchAllAssociative();
+
     }
 
     public function readOneJoined( int $id): ?array
     {
+/*
         $query = $this->getEntityManager()->createQuery(
-            'SELECT p.id, p.title, p.body, p.created_at, u.email
+            'SELECT p.id, p.title, p.body, p.created_at, p.user_id, u.email
             FROM App\Entity\Post p
             JOIN p.user u
             WHERE p.id = :id')
             ->setParameter('id', $id);
 
-        return $query->getOneOrNullResult(Query::HYDRATE_SCALAR);
-//        return $query->getScalarResult()[0];
+//        return $query->getOneOrNullResult(Query::HYDRATE_SCALAR);
+        return $query->getScalarResult()[0];
+*/
+        $conn = $this->getEntityManager()->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT p.id, p.title, p.body, p.created_at, p.user_id, u.email
+            FROM post p
+            JOIN user u ON p.user_id = u.id
+            WHERE p.id = :id');
+        $res = $stmt->executeQuery(['id' => $id]);
+        if ($res->rowCount() === 0) {
+            return null;
+        }
+
+        // возвращает массив массивов (т.e. сырой набор данных)
+        return $res->fetchAllAssociative()[0];
     }
 
     public function readAllJoined(): ?array
     {
+/*
         $query = $this->getEntityManager()->createQuery(
             'SELECT p.id, p.title, p.body, p.created_at, u.email
             FROM App\Entity\Post p
             JOIN p.user u');
 
         return $query->getScalarResult();
+*/
+        $conn = $this->getEntityManager()->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT p.id, p.title, p.body, p.created_at, u.email
+            FROM post p
+            JOIN user u ON p.user_id = u.id');
+        $res = $stmt->executeQuery();
+
+        // возвращает массив массивов (т.e. сырой набор данных)
+        return $res->fetchAllAssociative();
     }
 
 //    public function findOneBySomeField($value): ?Post

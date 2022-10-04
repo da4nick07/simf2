@@ -27,7 +27,7 @@
                             <div class="col offset-sm-1">
                                 <form class="row my-2" action="{{ path('post_search') }}" method="get">
                                     <div class="col-sm-8 my-auto">
-                                        <label for="search" class="visually-hidden">Пароль</label>
+                                        <label for="search" class="visually-hidden">Поиск</label>
                                         <input type="search" class="form-control" id="search" placeholder="Поиск..."  name="t">
                                     </div>
                                     <div class="col-auto my-auto">
@@ -43,7 +43,7 @@
                         </form>
 #}
                     </div>
-                    <div class="col-4 text-center my-auto bg-info">
+                    <div class="col-4 text-center my-auto reg-min-width bg-info">
                         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                             Привет, {{app.user.email}}  | <a href={{ path('app_logout') }}>Выйти</a>
                         {% else %}
@@ -61,9 +61,15 @@
                     <div class="col-md-2 col-3 my-2 border-start border-dark menu-min-width bg-info" id = "main-menu">
                         <ul>
                             <li><a href="{{ path('app_posts') }}">На главную</a></li>
-                            {% if app.user %}
+                            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                                 {% if (showInsert is defined) and (showInsert) %}
-                                        <li><a href="{{ path('post_new') }}">Добавить</a></li>
+                                    <li><a href="{{ path('post_new') }}">Добавить</a></li>
+                                {% endif %}
+                                {% if (showEdit is defined) and (showEdit) %}
+                                    <li><a href="{{ path('post_edit', {'id': post.id}) }}">Редактировать</a></li>
+                                {% endif %}
+                                {% if (showDelete is defined) and (showDelete) %}
+                                    <li><a href="{{ path('post_delete', {'id': post.id}) }}">Удалить</a></li>
                                 {% endif %}
                             {% endif %}
                             <div id = "user_menu">

@@ -1,7 +1,11 @@
 @import '~bootstrap/scss/bootstrap';
 
+.reg-min-width {
+  min-width: 11rem;
+}
+
 .menu-min-width {
-  min-width: 170px;
+  min-width: 11rem;
 }
 
 #main-menu {
