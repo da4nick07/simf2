@@ -28,6 +28,29 @@ class PostsController extends AbstractController
             'showInsert' => $showInsert
         ]);
 
+/*
+        $posts = $postRepository->readAllJoined();
+        $articls = '';
+        foreach ( $posts as $post ) {
+
+            $articls .= $this->renderView( 'posts/_article_tpl.html.twig', [
+//            $articls .= $this->render( 'posts/_article_tpl.html.twig', [
+                    'id' => $post['id'],
+                    'title' => $post['title'],
+                    'body' => $post['body'],
+                    'nick' => $post['email'],
+                    'created_at' => $post['created_at']
+            ]);
+        }
+        $articls = $this->renderTpl( $articls, [], 1);
+
+
+        return $this->render('posts/index2.html.twig', [
+    //           'articls' => new Response($articls),
+                'articls' => $articls,
+                'showInsert' => $showInsert
+            ]);
+*/
 //        return $this->render('base2.html.twig', );
     }
 
@@ -178,4 +201,29 @@ class PostsController extends AbstractController
         return $this->isGranted('IS_AUTHENTICATED_FULLY') &&
             ( ( $this->isGranted('ROLE_ADMIN') ) or ($authorId === $curUser->getId()));
 
-    }}
+    }
+
+    /**
+     * Выполняет указанный HTML-шаблон с PHP переменными
+     *
+     * @param string $tpl - полный путь до HTML-шаблона или строка собс-но шаблона
+     * @param array $vars - массив переменных
+     * @param int $tpltype - FILE - в $tpl - полный путь до HTML-шаблона, STRING - в $tpl - текст шаблона
+     * @return string
+     */
+    function renderTpl(string $tpl, array $vars = [], int $tplType = 0) : string
+    {
+        if ( count($vars) ) {
+            extract($vars, EXTR_OVERWRITE);
+        }
+
+        ob_start();
+        if ($tplType === 0) {
+            include $tpl;
+        } else {
+            eval( '?>' . $tpl . '<?php echo PHP_EOL;' );
+        }
+
+        return ob_get_clean();
+    }
+}

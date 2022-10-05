@@ -10,7 +10,10 @@
 #}
 
         {{ include('posts/_article_tpl.html.twig', {id: post.id, title: post.title, body: post.body, nick: post.email, created_at: post.created_at}) }}
-    {% endfor %}
+{#
+        {{ articls }}
+#}
+     {% endfor %}
 {% endblock %}
 
 {% block user_menu %}
