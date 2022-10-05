@@ -2,10 +2,14 @@
 
 {% block content %}
     {% for post in posts %}
+{#
         <p><b><a href="{{ path('post_show', {'id': post.id}) }}">{{ post.title }}</a></b></p>
         <p>&nbsp;{{ post.body }} </p>
         <p> <i>&nbsp;&nbsp Автор: {{ post.email }} </i></p>
         <p> <i>&nbsp;&nbsp Дата публикации: {{ post.created_at }} </i></p>
+#}
+
+        {{ include('posts/_article_tpl.html.twig', {id: post.id, title: post.title, body: post.body, nick: post.email, created_at: post.created_at}) }}
     {% endfor %}
 {% endblock %}
 
