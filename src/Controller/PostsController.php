@@ -64,8 +64,6 @@ class PostsController extends AbstractController
     // будет переадресация на 'app_login'
     // пока оставил так
     #[IsGranted("ROLE_ADMIN")]
-    // Оставил как пример техн. возможности. Жизнь длинная...
-//    public function addPost(Request $request, ManagerRegistry $doctrine): Response
     public function addPost(Request $request, PostRepository $postRepository): Response
     {
         $post = new Post();
@@ -101,7 +99,13 @@ class PostsController extends AbstractController
     public function edit(int $id, Request $request, ManagerRegistry $doctrine): Response
     {
 
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+//        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        // странно, но всё-равно перебрасывает на форму входа
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException(
+                'У Вас нет прав!'
+            );
+        }
 
         $post = $doctrine->getRepository( Post::class)->find($id);
         if (!$post) {
