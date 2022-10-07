@@ -1,6 +1,7 @@
 {% extends 'base2.html.twig' %}
 
 {% block content %}
+
     {% for post in posts %}
 {#
         шаблон для каждой статьи описывается / задаётся непосредственно в блоке ( и в цикле)
@@ -16,10 +17,16 @@
         {{ include('posts/_article_tpl.html.twig', {id: post.id, title: post.title, body: post.body, nick: post.email, created_at: post.created_at}) }}
 #}
 
-        {#  Сам шаблон - переменная, формируется "снаружи", напр. в контроллере  #}
+        {#  Сам шаблон - переменная, формируется "снаружи", напр. в контроллере #}
         {{ include(tpl, {id: post.id, title: post.title, body: post.body, nick: post.email, created_at: post.created_at}) }}
 
     {% endfor %}
+{#
+    Весь блок формируем "снаружи"
+    {% autoescape false  %}
+        {{ articls }}
+    {% endautoescape  %}
+#}
 {% endblock %}
 
 {% block user_menu %}
