@@ -7,6 +7,9 @@
         <div class="col my-2">
             {{ form_start(form) }}
                 {{ form_row(form.title) }}
+                {{ form_row(form.intro, { 'attr': {
+                    'rows' : '3',
+                    'cols' : '30' }}) }}
                 {{ form_row(form.body, { 'attr': {
                     'rows' : '10',
                     'cols' : '30' }}) }}

@@ -29,6 +29,9 @@ class Post
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $intro = null;
+
 //    #[ORM\Column(length: 255)]
 //    private ?string $slug = null;
 
@@ -109,6 +112,18 @@ class Post
     public function setUser(?User $User): self
     {
         $this->user = $User;
+
+        return $this;
+    }
+
+    public function getIntro(): ?string
+    {
+        return $this->intro;
+    }
+
+    public function setIntro(?string $intro): self
+    {
+        $this->intro = $intro;
 
         return $this;
     }

@@ -23,6 +23,14 @@ class PostType extends AbstractType
                     ])
                 ]
             ])
+            ->add('intro', TextareaType::class, [
+                'label' => 'Краткое описание* :',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Введите краткое описание...',
+                    ])
+                ]
+            ])
             ->add('body', TextareaType::class, [
                 'label' => 'Текст статьи* :',
                 'constraints' => [
@@ -30,7 +38,8 @@ class PostType extends AbstractType
                         'message' => 'Введите текст статьи...',
                     ])
                 ]
-            ]);
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

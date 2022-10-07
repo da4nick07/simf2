@@ -72,7 +72,7 @@ class PostRepository extends ServiceEntityRepository
         $conn = $this->getEntityManager()->getConnection();
 
         $stmt = $conn->prepare('
-            SELECT p.id, p.title, p.body, p.created_at, u.email
+            SELECT p.id, p.title, p.intro, p.created_at, u.email
             FROM post p
             JOIN user u ON p.user_id = u.id
             WHERE p.title LIKE :q');
@@ -99,7 +99,7 @@ class PostRepository extends ServiceEntityRepository
         $conn = $this->getEntityManager()->getConnection();
 
         $stmt = $conn->prepare('
-            SELECT p.id, p.title, p.body, p.created_at, p.user_id, u.email
+            SELECT p.id, p.title, p.intro, p.body, p.created_at, p.user_id, u.email
             FROM post p
             JOIN user u ON p.user_id = u.id
             WHERE p.id = :id');
@@ -125,7 +125,7 @@ class PostRepository extends ServiceEntityRepository
         $conn = $this->getEntityManager()->getConnection();
 
         $stmt = $conn->prepare('
-            SELECT p.id, p.title, p.body, p.created_at, u.email
+            SELECT p.id, p.title, p.intro, p.created_at, u.email
             FROM post p
             JOIN user u ON p.user_id = u.id');
         $res = $stmt->executeQuery();
