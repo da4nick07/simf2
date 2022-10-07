@@ -1,6 +1,13 @@
 {% extends 'base2.html.twig' %}
 
 {% block content %}
+    {% if content_title is defined %}
+        <div class="row">
+            <div class="col text-center my-auto">
+                <h2> {{ content_title }} </h2>
+            </div>
+        </div>
+    {% endif %}
 
     {% for post in posts %}
 {#

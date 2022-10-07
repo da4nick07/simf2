@@ -21,12 +21,11 @@ class PostsController extends AbstractController
     #[Route('/', name: 'homepage')]
     public function index(PostRepository $postRepository, Environment $twig): Response
     {
-        $showInsert = $this->isGranted('ROLE_ADMIN');
 /*
         // если шаблон для вывода статьи задаётся "внутри" posts/index2.html.twig
         return $this->render('posts/index2.html.twig', [
             'posts' => $postRepository->readAllJoined(),
-            'showInsert' => $showInsert
+            'showInsert' => $this->isGranted('ROLE_ADMIN')
         ]);
 */
 
@@ -34,7 +33,7 @@ class PostsController extends AbstractController
         return $this->render('posts/index2.html.twig', [
             'posts' => $postRepository->readAllJoined(),
             'tpl' => $twig->load('posts/_article_tpl.html.twig'),
-            'showInsert' => $showInsert
+            'showInsert' => $this->isGranted('ROLE_ADMIN')
         ]);
 /*
         // Весь блок формируем "снаружи"
@@ -53,7 +52,7 @@ class PostsController extends AbstractController
 
         return $this->render('posts/index2.html.twig', [
             'articls' => $articls,
-            'showInsert' => $showInsert
+            'showInsert' => $this->isGranted('ROLE_ADMIN')
         ]);
 */
 //        для отладки
@@ -185,13 +184,22 @@ class PostsController extends AbstractController
     }
 
     #[Route('/posts/search', name: 'post_search', priority: 1)]
-    public function search(Request $request, PostRepository $postRepository): Response
+    public function search(Request $request, PostRepository $postRepository, Environment $twig): Response
     {
-        $value = (string)$request->query->get('t');
+/*
         $posts = $postRepository->findByTitle($value);
 
         return $this->render('posts/search.html.twig', [
             'posts' => $posts
+        ]);
+*/
+        $value = (string)$request->query->get('t');
+        // шаблон для вывода статьи задаём как параметр
+        return $this->render('posts/index2.html.twig', [
+            'posts' => $postRepository->findByTitle($value),
+            'tpl' => $twig->load('posts/_article_tpl.html.twig'),
+            'showInsert' => $this->isGranted('ROLE_ADMIN'),
+            'content_title' => 'Результаты поиска'
         ]);
     }
 
