@@ -3,17 +3,23 @@
 {% block content %}
     {% for post in posts %}
 {#
+        шаблон для каждой статьи описывается / задаётся непосредственно в блоке ( и в цикле)
+
         <p><b><a href="{{ path('post_show', {'id': post.id}) }}">{{ post.title }}</a></b></p>
         <p>&nbsp;{{ post.body }} </p>
         <p> <i>&nbsp;&nbsp Автор: {{ post.email }} </i></p>
         <p> <i>&nbsp;&nbsp Дата публикации: {{ post.created_at }} </i></p>
 #}
-
-        {{ include('posts/_article_tpl.html.twig', {id: post.id, title: post.title, body: post.body, nick: post.email, created_at: post.created_at}) }}
 {#
-        {{ articls }}
+        шаблон для каждой статьи подгружаетсяо в блоке ( и в цикле)
+        ес-но имя шаблона можно передать как переменную
+        {{ include('posts/_article_tpl.html.twig', {id: post.id, title: post.title, body: post.body, nick: post.email, created_at: post.created_at}) }}
 #}
-     {% endfor %}
+
+        {#  Сам шаблон - переменная, формируется "снаружи", напр. в контроллере  #}
+        {{ include(tpl, {id: post.id, title: post.title, body: post.body, nick: post.email, created_at: post.created_at}) }}
+
+    {% endfor %}
 {% endblock %}
 
 {% block user_menu %}

@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Form\PostType;
 use App\Repository\PostRepository;
-use DateTimeImmutable;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,28 +12,36 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Post;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Entity\User;
+use Twig\Environment;
 
 class PostsController extends AbstractController
 {
 
     #[Route('/posts', name: 'app_posts')]
     #[Route('/', name: 'homepage')]
-    public function index(PostRepository $postRepository): Response
+    public function index(PostRepository $postRepository, Environment $twig): Response
     {
         $showInsert = $this->isGranted('ROLE_ADMIN');
-
+/*
+        // если шаблон для вывода статьи задаётся "внутри" posts/index2.html.twig
         return $this->render('posts/index2.html.twig', [
             'posts' => $postRepository->readAllJoined(),
+            'showInsert' => $showInsert
+        ]);
+*/
+        // шаблон для вывода статьи задаём как параметр
+        return $this->render('posts/index2.html.twig', [
+            'posts' => $postRepository->readAllJoined(),
+            'tpl' => $twig->load('posts/_article_tpl.html.twig'),
             'showInsert' => $showInsert
         ]);
 
 /*
         $posts = $postRepository->readAllJoined();
+        $tpl = $twig->load('posts/_article_tpl.html.twig');
         $articls = '';
         foreach ( $posts as $post ) {
-
-            $articls .= $this->renderView( 'posts/_article_tpl.html.twig', [
-//            $articls .= $this->render( 'posts/_article_tpl.html.twig', [
+            $articls .= $tpl->render( [
                     'id' => $post['id'],
                     'title' => $post['title'],
                     'body' => $post['body'],
@@ -42,15 +49,14 @@ class PostsController extends AbstractController
                     'created_at' => $post['created_at']
             ]);
         }
-        $articls = $this->renderTpl( $articls, [], 1);
-
 
         return $this->render('posts/index2.html.twig', [
-    //           'articls' => new Response($articls),
-                'articls' => $articls,
-                'showInsert' => $showInsert
-            ]);
+//            'articls' => $articls,
+//            'articls' => new Response($articls),
+            'showInsert' => $showInsert
+        ]);
 */
+//        для отладки
 //        return $this->render('base2.html.twig', );
     }
 
