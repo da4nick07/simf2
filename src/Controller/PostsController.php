@@ -13,6 +13,11 @@ use App\Entity\Post;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Entity\User;
 use Twig\Environment;
+use App\Service\TestSrv;
+use VLib;
+
+// забавно, но можно не загружать
+//require_once 'src/VLib/func.php';
 
 class PostsController extends AbstractController
 {
@@ -61,7 +66,7 @@ class PostsController extends AbstractController
 
     #[Route('/posts/{id}', name: 'post_show')]
     // ParamConverter штука интересная, но получить безликое и неуправляемое 404 "Страница не найдена"... Не хочу
-    public function post(int $id, PostRepository $postRepository): Response
+    public function post(int $id, PostRepository $postRepository, TestSrv $testSrv): Response
     {
 
         $post = $postRepository->readOneJoined($id);
@@ -84,7 +89,9 @@ class PostsController extends AbstractController
         return $this->render('posts/show.html.twig', [
             'post' => $post,
             'showEdit' => $showEdit,
-            'showDelete' => $showDelete
+            'showDelete' => $showDelete,
+            'testSrv' => $testSrv->testMsg(),
+            'ok' => VLib\myFunc()
        ]);
     }
 
@@ -205,6 +212,7 @@ class PostsController extends AbstractController
 
     /**
      *
+     * @param int $authorId
      * @return bool
      */
     public function canEdit(int $authorId): bool
