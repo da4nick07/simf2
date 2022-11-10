@@ -69,6 +69,8 @@ class PostsController extends AbstractController
     public function post(int $id, PostRepository $postRepository, TestSrv $testSrv): Response
     {
 
+        $root = dirname( __FILE__, 1);
+
         $post = $postRepository->readOneJoined($id);
         if (!$post) {
             // исключение можно и своё бросить...
