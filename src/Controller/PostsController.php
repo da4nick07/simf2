@@ -153,7 +153,7 @@ class PostsController extends AbstractController
 
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
-        $canEdit = $this->isGranted("ROLE_ADMIN") || $post['user_id'] === $user->getId();
+        $canEdit = $this->isGranted("ROLE_ADMIN") || $post->getUser()->getId() === $user->getId();
         if (!$canEdit) {
             throw $this->createAccessDeniedException(
                 'У Вас нет прав!'

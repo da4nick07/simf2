@@ -10,9 +10,14 @@ class PostsControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/');
-
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('a', 'Войти');
-        $this->assertSelectorExists('div:contains("Первая статья")');
+
+        // сначала надо бы выйти на блок  <div class="col bg-info" id = "content">
+        $this->assertCount(2, $crawler->filter('p b a'));
+
+        // для проверки собс-но гл.страницы - это лишнее...
+        $client->clickLink('Статья 2');
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('div:contains("Описание статьи 2")');
     }
 }
