@@ -22,8 +22,8 @@ use VLib;
 class PostsController extends AbstractController
 {
 
-    #[Route('/posts', name: 'app_posts')]
-    #[Route('/', name: 'homepage')]
+    #[Route('/posts', methods: ['GET'], name: 'app_posts')]
+    #[Route('/', methods: ['GET'], name: 'homepage')]
     public function index(PostRepository $postRepository, Environment $twig): Response
     {
 /*
@@ -64,7 +64,7 @@ class PostsController extends AbstractController
 //        return $this->render('base2.html.twig', );
     }
 
-    #[Route('/posts/{id}', name: 'post_show')]
+    #[Route('/posts/{id}', methods: ['GET'], name: 'post_show')]
     // ParamConverter штука интересная, но получить безликое и неуправляемое 404 "Страница не найдена"... Не хочу
     public function post(int $id, PostRepository $postRepository, TestSrv $testSrv): Response
     {
@@ -93,10 +93,11 @@ class PostsController extends AbstractController
             'showEdit' => $showEdit,
             'showDelete' => $showDelete,
             'testSrv' => $testSrv->testMsg(),
-            'ok' => VLib\myFunc()
+            'ok' =>''// VLib\myFunc()
        ]);
     }
 
+//    #[Route('/posts/new', methods: ['POST'], name: 'post_new', priority: 1)]
     #[Route('/posts/new', name: 'post_new', priority: 1)]
     // будет переадресация на 'app_login'
     // пока оставил так
@@ -192,7 +193,7 @@ class PostsController extends AbstractController
         return $this->redirectToRoute('app_posts');
     }
 
-    #[Route('/posts/search', name: 'post_search', priority: 1)]
+    #[Route('/posts/search', methods: ['GET'], name: 'post_search', priority: 1)]
     public function search(Request $request, PostRepository $postRepository, Environment $twig): Response
     {
 /*
