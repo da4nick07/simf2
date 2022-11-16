@@ -93,7 +93,7 @@ class PostsController extends AbstractController
             'showEdit' => $showEdit,
             'showDelete' => $showDelete,
             'testSrv' => $testSrv->testMsg(),
-            'ok' =>''// VLib\myFunc()
+            'ok' => VLib\myFunc()
        ]);
     }
 

@@ -20,10 +20,7 @@ class PostsControllerTest extends WebTestCase
 
         $crawler = $client->request('GET', '/posts');
         $this->assertResponseIsSuccessful();
-        // сначала выходим на блок  <div class="col bg-info" id = "content">
-        $crawler = $crawler->filter('#content');
-        //  для случайного порядка тестов надо убрать
-        $this->assertCount(2, $crawler->filter('p b a'));
+        $this->assertCount(2, $crawler->filter('#content > p b a'));
 
         // для проверки собс-но гл.страницы - это лишнее...
         $client->clickLink('Статья 2');
