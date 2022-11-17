@@ -2,8 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Form\PostType;
+use App\Form\CommentFormType;
 use App\Repository\PostRepository;
+use App\Repository\CommentRepository;
+use DateTimeImmutable;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -66,10 +70,10 @@ class PostsController extends AbstractController
 
     #[Route('/posts/{id}', methods: ['GET'], name: 'post_show')]
     // ParamConverter штука интересная, но получить безликое и неуправляемое 404 "Страница не найдена"... Не хочу
-    public function post(int $id, PostRepository $postRepository, TestSrv $testSrv): Response
+    public function post(int $id, PostRepository $postRepository, CommentRepository $commentRepository, Environment $twig, TestSrv $testSrv): Response
     {
 
-        $root = dirname( __FILE__, 1);
+//        $root = dirname( __FILE__, 1);
 
         $post = $postRepository->readOneJoined($id);
         if (!$post) {
@@ -88,12 +92,22 @@ class PostsController extends AbstractController
             $showEdit = $showDelete || ( $post['user_id'] === $user->getId() );
         }
 
+        $comment = new Comment();
+        $comment->setCreatedAt(new DateTimeImmutable());
+        $comment->setUser($user);
+//        $comment->setPost($this->getUser());
+
+        $form = $this->createForm(CommentFormType::class, $comment);
+
         return $this->render('posts/show.html.twig', [
             'post' => $post,
+            'comments' => $commentRepository->readAllByPost($id),
+            'com_tpl' => $twig->load('posts/_comment_tpl.html.twig'),
+            'comment_form' => $form->createView(),
             'showEdit' => $showEdit,
             'showDelete' => $showDelete,
             'testSrv' => $testSrv->testMsg(),
-            'ok' => VLib\myFunc()
+            'ok' => '123' //VLib\myFunc()
        ]);
     }
 

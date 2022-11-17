@@ -1,11 +1,43 @@
 {% extends 'base2.html.twig' %}
 
+{% form_theme comment_form 'bootstrap_5_layout.html.twig' %}
+
 {% block content %}
     <p><b>{{ post.title }}</b></p>
     <p>{{ post.intro }}</p>
     <p>{{ post.body }}</p>
     <p> <i>&nbsp;&nbsp Автор: {{ post.email }} </i></p>
     <p> <i>&nbsp;&nbsp Дата публикации: {{ post.created_at }} </i></p>
+
+    <h4>Комментарии:</h4>
+{#     {{ form(comment_form) }} #}
+    <div class="row">
+        <div class="col my-2">
+            {{ form_start(comment_form) }}
+            {{ form_row(comment_form.body, { 'attr': {
+                'rows' : '10',
+                'cols' : '30' }}) }}
+            {#                 <button type="submit" class="btn btn-primary">Сохранить</button>#}
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button class="btn btn-primary me-md-2" type="submit">Отправить</button>
+            </div>
+            {{ form_end(comment_form) }}
+        </div>
+    </div>
+
+
+    {% if comments|length > 0 %}
+        {% for comment in comments %}
+            {#  Сам шаблон - переменная, формируется "снаружи", напр. в контроллере #}
+            {{ include(com_tpl, {id: comment.id, body: comment.body, nick: comment.email, created_at: comment.created_at}) }}
+            <hr>
+        {% endfor %}
+    {% else %}
+        <div>Пока нет комментариев</div>
+    {% endif %}
+
+    <br><br>
+    <p>Тестовый вывод:</p>
     <p>{{ testSrv }}</p>
     <p>{{ ok }}</p>
 {% endblock %}
