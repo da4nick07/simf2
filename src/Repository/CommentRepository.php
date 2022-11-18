@@ -55,6 +55,20 @@ class CommentRepository extends ServiceEntityRepository
         return $res->fetchAllAssociative();
     }
 
+    public function addComment(array $values): int
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $stmt = $conn->prepare('
+            INSERT INTO comment
+            (body, created_at, post_id, user_id)
+            VALUES
+            (:body, :created_at, :post_id, :user_id)');
+        $res = $stmt->executeQuery($values);
+
+        return $conn->lastInsertId();
+    }
+
 //    /**
 //     * @return Comment[] Returns an array of Comment objects
 //     */

@@ -134,6 +134,20 @@ class PostRepository extends ServiceEntityRepository
         return $res->fetchAllAssociative();
     }
 
+    public function addPost(array $values): int
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $stmt = $conn->prepare('
+            INSERT INTO post
+            (title, intro, body, created_at, user_id)
+            VALUES
+            (:title, :intro, :body, :created_at, :user_id)');
+        $res = $stmt->executeQuery($values);
+
+        return $conn->lastInsertId();
+    }
+
 //    public function findOneBySomeField($value): ?Post
 //    {
 //        return $this->createQueryBuilder('p')

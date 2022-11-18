@@ -123,22 +123,28 @@ class PostsController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-////            /** @var \App\Entity\User $user */
-////            $user = $this->getUser();
-            $post->setUser($this->getUser());
+            /** @var \App\Entity\User $user */
+            $user = $this->getUser();
+//            $post->setUser($this->getUser());
 /*
     // Оставил как пример техн. возможности. Жизнь длинная...
             $em = $doctrine->getManager();
             $em->persist($post);
             $em->flush();
 */
-            $postRepository->add( $post, true);
+            $postId = $postRepository->addPost( [
+                'title'=>$post->getTitle(),
+                'intro'=>$post->getIntro(),
+                'body'=>$post->getBody(),
+                'created_at'=>date('Y-m-d H:i:s'),
+                'user_id'=>$user->getId()
+            ], true);
 
             // возврат к общему списку
 //            return $this->redirectToRoute('app_posts');
             // а хочется увидеть сохранённое
             return $this->redirectToRoute('post_show', [
-                'id' => $post->getId()
+                'id' => $postId
             ]);
 
         }
