@@ -138,7 +138,7 @@ class PostsController extends AbstractController
                 'body'=>$post->getBody(),
                 'created_at'=>date('Y-m-d H:i:s'),
                 'user_id'=>$user->getId()
-            ], true);
+            ]);
 
             // возврат к общему списку
 //            return $this->redirectToRoute('app_posts');
