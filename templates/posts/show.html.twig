@@ -9,23 +9,23 @@
     <p> <i>&nbsp;&nbsp Автор: {{ post.email }} </i></p>
     <p> <i>&nbsp;&nbsp Дата публикации: {{ post.created_at }} </i></p>
 
-    <h4>Комментарии:</h4>
-{#     {{ form(comment_form) }} #}
-    <div class="row">
-        <div class="col my-2">
-            {{ form_start(comment_form, {method: 'POST', action: path('comment_new', {'id': post.id})}) }}
-            {{ form_row(comment_form.body, { 'attr': {
-                'rows' : '10',
-                'cols' : '30' }}) }}
-            {#                 <button type="submit" class="btn btn-primary">Сохранить</button>#}
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <button class="btn btn-primary me-md-2" type="submit">Отправить</button>
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        <div class="row">
+            <div class="col my-2">
+                {{ form_start(comment_form, {method: 'POST', action: path('comment_new', {'id': post.id})}) }}
+                {{ form_row(comment_form.body, { 'attr': {
+                    'rows' : '10',
+                    'cols' : '30' }}) }}
+                    {#                 <button type="submit" class="btn btn-primary">Сохранить</button>#}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button class="btn btn-primary me-md-2" type="submit">Отправить</button>
+                    </div>
+                {{ form_end(comment_form) }}
             </div>
-            {{ form_end(comment_form) }}
         </div>
-    </div>
+    {% endif %}
 
-
+    <h4>Комментарии:</h4>
     {% if comments|length > 0 %}
         {% for comment in comments %}
             {#  Сам шаблон - переменная, формируется "снаружи", напр. в контроллере #}
