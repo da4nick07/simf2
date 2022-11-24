@@ -20,8 +20,7 @@ use Twig\Environment;
 use App\Service\TestSrv;
 use VLib;
 
-// забавно, но можно не загружать
-//require_once 'src/VLib/func.php';
+require_once dirname(__FILE__) . '/../VLib/func.php';
 
 class PostsController extends AbstractController
 {
@@ -107,7 +106,7 @@ class PostsController extends AbstractController
             'showEdit' => $showEdit,
             'showDelete' => $showDelete,
             'testSrv' => $testSrv->testMsg(),
-            'ok' => '123' //VLib\myFunc()
+            'ok' => VLib\myFunc()
        ]);
     }
 

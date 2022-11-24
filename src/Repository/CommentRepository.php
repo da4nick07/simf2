@@ -48,6 +48,7 @@ class CommentRepository extends ServiceEntityRepository
             FROM comment c
             JOIN user u ON c.user_id = u.id
             WHERE c.post_id = :id
+            AND c.state = 2
             ORDER BY c.created_at DESC');
         $res = $stmt->executeQuery(['id' => $id]);
 
@@ -61,9 +62,9 @@ class CommentRepository extends ServiceEntityRepository
 
         $stmt = $conn->prepare('
             INSERT INTO comment
-            (body, created_at, post_id, user_id)
+            (body, created_at, post_id, user_id, state)
             VALUES
-            (:body, :created_at, :post_id, :user_id)');
+            (:body, :created_at, :post_id, :user_id, :state)');
         $res = $stmt->executeQuery($values);
 
         return $conn->lastInsertId();

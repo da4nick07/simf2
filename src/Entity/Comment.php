@@ -6,6 +6,14 @@ use App\Repository\CommentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+
+enum CommentStateType : int
+{
+    case SUBMITTED = 0;
+    case SPAM = 1;
+    case PUBLISHED = 2;
+}
+
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 class Comment
 {
@@ -27,6 +35,9 @@ class Comment
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
+
+    #[ORM\Column(type: Types::SMALLINT)]
+    private ?int $state = 0; // CommentStateType::SUBMITTED
 
     public function getId(): ?int
     {
@@ -77,6 +88,29 @@ class Comment
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getState(): ?CommentStateType
+    {
+/*
+        // при ошибке будет исключение
+        return match($this->state) {
+            0 => CommentStateType::SUBMITTED,
+            1 => CommentStateType::SPAM,
+            2 => CommentStateType::PUBLISHED
+        };
+*/
+        // вернёт null при ошибке
+//        return CommentStateType::tryFrom($this->state);
+        // при ошибке будет исключение
+        return CommentStateType::from($this->state);
+    }
+
+    public function setState(?CommentStateType $state): self
+    {
+        $this->state = $state->value;
 
         return $this;
     }
