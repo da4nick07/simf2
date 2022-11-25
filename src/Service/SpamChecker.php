@@ -49,4 +49,9 @@ class SpamChecker
 
         return 'true' === $content ? 1 : 0;
     }
+
+    public function getEndpoint() : string
+    {
+        return $this->endpoint;
+    }
 }
