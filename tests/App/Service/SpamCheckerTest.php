@@ -10,19 +10,28 @@ use Symfony\Component\DependencyInjection\Definition;
 
 class SpamCheckerTest extends WebTestCase
 {
-    // так нельзя...
-//    public function testSpamChecker(SpamChecker $spamChecker)
-    public function testSpamChecker()
+    public function testSpamCheckerByName()
     {
         self::bootKernel();
-        // returns the real and unchanged service container
         $container = self::$kernel->getContainer();
 
-        // приходиться делать сервис публичным...
-//        $c = $container->has('App\Service\SpamChecker');
         $this->assertTrue($container->has(SpamChecker::class));
         /** @var  $spamChecker SpamChecker */
         $spamChecker = $container->get(SpamChecker::class);
+        $s = $spamChecker->getEndpoint();
+
+        echo 'Endpoint = ' . $s . PHP_EOL;
+
+    }
+
+    public function testSpamCheckerByAlias()
+    {
+        self::bootKernel();
+        $container = self::$kernel->getContainer();
+
+        $this->assertTrue($container->has('test.SpamChecker'));
+        /** @var  $spamChecker SpamChecker */
+        $spamChecker = $container->get('test.SpamChecker');
         $s = $spamChecker->getEndpoint();
 
         echo 'Endpoint = ' . $s . PHP_EOL;
@@ -38,7 +47,7 @@ class SpamCheckerTest extends WebTestCase
 
         /** @var  $bag ParameterBagInterface */
         $bag = $container->getParameterBag();
-        echo $bag->get('app.test_param');
+        echo $bag->get('app.test_param') . PHP_EOL;
 
     }
 

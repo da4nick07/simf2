@@ -37,6 +37,8 @@ class EnvTest extends WebTestCase
         $this->assertTrue($container->hasParameter('app.test_param'));
         $this->assertEquals('app.test_param123', $container->getParameter('app.test_param'));
 
+        // а как достать параметр/ аргумент сервиса?
+//        $this->assertTrue($container->hasParameter('$akismetKey'));
 
     }
 
