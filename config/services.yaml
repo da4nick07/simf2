@@ -28,7 +28,7 @@ services:
             - '../src/VLib/'
     App\Service\SpamChecker:
 #        public: true
-        tags: ['tested.services']
+        tags: ['spam_cheker', 'tested']
         arguments:
             $akismetKey: '123'
 

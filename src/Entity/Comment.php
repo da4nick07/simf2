@@ -2,17 +2,10 @@
 
 namespace App\Entity;
 
+use App\Enum\CommentStateType;
 use App\Repository\CommentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-
-
-enum CommentStateType : int
-{
-    case SUBMITTED = 0;
-    case SPAM = 1;
-    case PUBLISHED = 2;
-}
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 class Comment

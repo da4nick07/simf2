@@ -21,7 +21,7 @@ class TestPass  implements CompilerPassInterface
 //          $container->getDefinition(SpamChecker::class)->setPublic(true);
 
             // по тегу
-            foreach ($container->findTaggedServiceIds('tested.services') as $id => $tags) {
+            foreach ($container->findTaggedServiceIds('tested') as $id => $tags) {
                 $container->getDefinition($id)->setPublic(true);
             }
         }

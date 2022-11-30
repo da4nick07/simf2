@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\Definition;
 
 class SpamCheckerTest extends WebTestCase
 {
-    public function testSpamCheckerByName()
+    public function testByName()
     {
         self::bootKernel();
         $container = self::$kernel->getContainer();
@@ -24,7 +24,7 @@ class SpamCheckerTest extends WebTestCase
 
     }
 
-    public function testSpamCheckerByAlias()
+    public function testByAlias()
     {
         self::bootKernel();
         $container = self::$kernel->getContainer();
@@ -51,4 +51,14 @@ class SpamCheckerTest extends WebTestCase
 
     }
 
+    public function testGetSpamScore()
+    {
+        $stub = $this->createStub(SpamChecker::class);
+        $stub->method('getSpamScore')
+            ->willReturn(2);
+
+        // Calling $stub->doSomething() will now return
+        // 'foo'.
+        $this->assertSame('foo', $stub->doSomething());
+    }
 }

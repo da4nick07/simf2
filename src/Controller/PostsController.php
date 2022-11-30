@@ -91,18 +91,12 @@ class PostsController extends AbstractController
             $showEdit = $showDelete || ( $post['user_id'] === $user->getId() );
         }
 
-        $comment = new Comment();
-        $comment->setCreatedAt(new DateTimeImmutable());
-        $comment->setUser($user);
-//        $comment->setPost($this->getUser());
-
-        $form = $this->createForm(CommentFormType::class, $comment);
-
         return $this->render('posts/show.html.twig', [
             'post' => $post,
             'comments' => $commentRepository->readAllByPost($id),
             'com_tpl' => $twig->load('posts/_comment_tpl.html.twig'),
-            'comment_form' => $form->createView(),
+//            'comment_form' => $form->createView(),
+            'comment_form' => $this->createForm(CommentFormType::class)->createView(),
             'showEdit' => $showEdit,
             'showDelete' => $showDelete,
             'testSrv' => $testSrv->testMsg(),
