@@ -30,7 +30,7 @@ class Kernel extends BaseKernel
 
     protected function build(ContainerBuilder $container): void
     {
-        $container->addCompilerPass(new TestPass());
+//        $container->addCompilerPass(new TestPass());
     }
 
 }

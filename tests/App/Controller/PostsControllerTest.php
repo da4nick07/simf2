@@ -36,27 +36,8 @@ class PostsControllerTest extends WebTestCase
         $this->assertSelectorExists('div:contains("Самая первая статья")');
     }
 
-    public function testPost(): void
-    {
-        $client = static::createClient();
-        // блин, symfony-demo... А если я не знаю id?...
-//        $post = $client->getContainer()->get('doctrine')->getRepository(Post::class)->find(3);
-        $post = $client->getContainer()->get('doctrine')->getRepository(Post::class)->findOneBy([]);
-        $client->request('GET', sprintf('/posts/%s', $post->getId()));
-
-        $this->assertResponseIsSuccessful();
-    }
-
     public function testAddPost(): void
     {
-/*
-        // заходим админом
-        // так не работает... не проходит авторизация
-        $client = static::createClient([], [
-            'PHP_AUTH_USER' => '555@mail.ru',
-            'PHP_AUTH_PW' => '555',
-        ]);
-*/
         // заходим админом
         $client = static::createClient();
         $admin = static::getContainer()->get(UserRepository::class)->findOneByEmail('555@mail.ru');
@@ -77,4 +58,17 @@ class PostsControllerTest extends WebTestCase
         $this->assertSelectorExists('div:contains("Ещё одна статья")');
     }
 
+    public function testAddComment(): void
+    {
+        $client = static::createClient();
+        $user = static::getContainer()->get(UserRepository::class)->findOneByEmail('222@mail.ru');
+        $client->loginUser($user);
+
+        $post = $client->getContainer()->get('doctrine')->getRepository(Post::class)->findOneBy([]);
+        $client->request('GET', sprintf('/posts/%s', $post->getId()));
+        $this->assertResponseIsSuccessful();
+
+        // TODO Добавление коммента
+
+    }
 }

@@ -147,17 +147,9 @@ class PostsController extends AbstractController
     }
 
     #[Route('/posts/{id}/edit', name: 'post_edit')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function edit(int $id, Request $request, ManagerRegistry $doctrine): Response
     {
-
-//        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        // странно, но всё-равно перебрасывает на форму входа
-        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
-            throw $this->createAccessDeniedException(
-                'У Вас нет прав!'
-            );
-        }
-
         $post = $doctrine->getRepository( Post::class)->find($id);
         if (!$post) {
             throw $this->createNotFoundException(

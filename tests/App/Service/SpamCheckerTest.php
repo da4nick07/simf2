@@ -13,7 +13,11 @@ class SpamCheckerTest extends WebTestCase
     public function testByName()
     {
         self::bootKernel();
-        $container = self::$kernel->getContainer();
+        // если использовать CompilerPass
+//        $container = self::$kernel->getContainer();
+
+        // this uses a special testing container that allows you to fetch private services
+        $container = static::getContainer();
 
         $this->assertTrue($container->has(SpamChecker::class));
         /** @var  $spamChecker SpamChecker */
@@ -51,14 +55,4 @@ class SpamCheckerTest extends WebTestCase
 
     }
 
-    public function testGetSpamScore()
-    {
-        $stub = $this->createStub(SpamChecker::class);
-        $stub->method('getSpamScore')
-            ->willReturn(2);
-
-        // Calling $stub->doSomething() will now return
-        // 'foo'.
-        $this->assertSame('foo', $stub->doSomething());
-    }
 }
