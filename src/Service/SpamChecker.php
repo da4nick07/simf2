@@ -2,6 +2,7 @@
 namespace App\Service;
 
 use App\Entity\Comment;
+use Doctrine\DBAL\Types\DateImmutableType;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class SpamChecker
@@ -30,7 +31,8 @@ class SpamChecker
                 'comment_author' => $user,
                 'comment_author_email' => $user->getEmail(),
                 'comment_content' => $comment->getBody(),
-                'comment_date_gmt' => $comment->getCreatedAt()->format('c'),
+//                'comment_date_gmt' => $comment->getCreatedAt()->format('c'), // Дата в формате стандарта ISO 8601
+                'comment_date_gmt' => (new \DateTime)->format('c'),
                 'blog_lang' => 'en',
                 'blog_charset' => 'UTF-8',
                 'is_test' => true,

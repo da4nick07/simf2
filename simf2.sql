@@ -28,12 +28,13 @@ CREATE TABLE `comment` (
   `user_id` int(11) NOT NULL,
   `body` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL COMMENT '(DC2Type:datetimetz_immutable)',
+  `state` smallint(6) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX_9474526C4B89032C` (`post_id`),
   KEY `IDX_9474526CA76ED395` (`user_id`),
   CONSTRAINT `FK_9474526C4B89032C` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`),
   CONSTRAINT `FK_9474526CA76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +43,7 @@ CREATE TABLE `comment` (
 
 LOCK TABLES `comment` WRITE;
 /*!40000 ALTER TABLE `comment` DISABLE KEYS */;
-INSERT INTO `comment` VALUES (1,1,2,'Комментарий к первой статье','2022-11-17 11:41:13'),(2,3,3,'123','2022-11-18 16:30:29'),(3,4,3,'Коммент к статье4','2022-11-18 16:39:24');
+INSERT INTO `comment` VALUES (1,1,2,'Комментарий к первой статье','2022-11-17 11:41:13',1),(2,3,3,'123','2022-11-18 16:30:29',1),(3,4,3,'Коммент к статье4','2022-11-18 16:39:24',1),(4,1,2,'Второй коммент к первой статье','2022-11-22 09:45:57',1),(5,2,2,'Первый коммент ко второй статье','2022-11-30 15:04:34',1),(6,2,2,'второй, ко второй','2022-11-30 15:30:02',1),(7,2,2,'Третий ко второй','2022-11-30 15:32:53',1),(8,1,2,'третий к первой','2022-11-30 15:33:24',1),(9,3,2,'второй к третьей','2022-11-30 15:35:00',1),(10,5,3,'первый к пятой','2022-11-30 15:37:14',1),(11,1,2,'четвёртый к первой','2022-12-06 11:04:58',1),(12,1,2,'5 к 1','2022-12-06 11:08:53',1);
 /*!40000 ALTER TABLE `comment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -67,7 +68,7 @@ CREATE TABLE `doctrine_migration_versions` (
 
 LOCK TABLES `doctrine_migration_versions` WRITE;
 /*!40000 ALTER TABLE `doctrine_migration_versions` DISABLE KEYS */;
-INSERT INTO `doctrine_migration_versions` VALUES ('DoctrineMigrations\\Version20221110124022','2022-11-10 15:41:41',123),('DoctrineMigrations\\Version20221117065602','2022-11-17 09:56:43',224),('DoctrineMigrations\\Version20221117074334','2022-11-17 10:43:45',153);
+INSERT INTO `doctrine_migration_versions` VALUES ('DoctrineMigrations\\Version20221110124022','2022-11-10 15:41:41',123),('DoctrineMigrations\\Version20221117065602','2022-11-17 09:56:43',224),('DoctrineMigrations\\Version20221117074334','2022-11-17 10:43:45',153),('DoctrineMigrations\\Version20221122065903','2022-11-22 09:59:13',128),('DoctrineMigrations\\Version20221122080033','2022-11-22 11:00:40',92);
 /*!40000 ALTER TABLE `doctrine_migration_versions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -193,4 +194,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-11-21 11:51:50
+-- Dump completed on 2022-12-06 11:49:42

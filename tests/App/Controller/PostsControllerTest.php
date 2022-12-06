@@ -40,35 +40,44 @@ class PostsControllerTest extends WebTestCase
     {
         // заходим админом
         $client = static::createClient();
-        $admin = static::getContainer()->get(UserRepository::class)->findOneByEmail('555@mail.ru');
-        // simulate $admin being logged in
+        $admin = static::getContainer()->get(UserRepository::class)->find(TEST_ADMIN_ID);
         $client->loginUser($admin);
         $crawler = $client->request('GET', '/');
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('div:contains("Привет, 555@mail.ru")');
 
         $client->clickLink('Добавить');
+        $this->assertResponseIsSuccessful();
         $crawler = $client->submitForm('Сохранить', [
             'post[title]' => 'Ещё одна статья',
             'post[intro]' => 'Ещё одна статья',
             'post[body]' => 'Ещё одна статья',
         ]);
 
-        $crawler = $client->request('GET', '/');
+//        $crawler = $client->request('GET', '/');
+        $this->assertResponseRedirects();
+        $client->followRedirect();
         $this->assertSelectorExists('div:contains("Ещё одна статья")');
     }
 
     public function testAddComment(): void
     {
         $client = static::createClient();
-        $user = static::getContainer()->get(UserRepository::class)->findOneByEmail('222@mail.ru');
+        $user = static::getContainer()->get(UserRepository::class)->find(TEST_USER_ID);
         $client->loginUser($user);
 
-        $post = $client->getContainer()->get('doctrine')->getRepository(Post::class)->findOneBy([]);
-        $client->request('GET', sprintf('/posts/%s', $post->getId()));
+//        $post = $client->getContainer()->get('doctrine')->getRepository(Post::class)->findOneBy([]);
+//        $client->request('GET', sprintf('/posts/%s', $post->getId()));
+        $client->request('GET', '/posts/' . TEST_ADMIN_POST_ID);
         $this->assertResponseIsSuccessful();
 
-        // TODO Добавление коммента
+        //  Добавление коммента
+        $crawler = $client->submitForm('Отправить', [
+            'comment_form[body]' => 'Новый коммент к статье админа',
+        ]);
+        $this->assertResponseRedirects();
+        $client->followRedirect();
+        $this->assertSelectorExists('div:contains("Новый коммент к статье админа")');
 
     }
 }

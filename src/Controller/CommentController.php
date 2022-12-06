@@ -25,6 +25,7 @@ class CommentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+ /*
             $context = [
                 'user_ip' => $request->getClientIp(),
                 'user_agent' => $request->headers->get('user-agent'),
@@ -34,7 +35,7 @@ class CommentController extends AbstractController
             if (2 === $spamChecker->getSpamScore($comment, $context)) {
                 throw new \RuntimeException('Blatant spam, go away!');
             }
-
+*/
             /** @var \App\Entity\User $user */
             $user = $this->getUser();
             $commentRepository->addComment([

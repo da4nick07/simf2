@@ -14,10 +14,10 @@ class PostsControllerTest  extends WebTestCase
      *
      * @dataProvider getUrls
      */
-    public function testAccessDenied(string $userMail, string $httpMethod, string $url): void
+    public function testAccessDenied(int $userId, string $httpMethod, string $url): void
     {
         $client = static::createClient();
-        $user = static::getContainer()->get(UserRepository::class)->findOneByEmail($userMail);
+        $user = static::getContainer()->get(UserRepository::class)->find($userId);
         $client->loginUser($user);
         $client->request($httpMethod, $url);
 
@@ -26,7 +26,7 @@ class PostsControllerTest  extends WebTestCase
 
     public function getUrls(): ?\Generator
     {
-        yield ['222@mail.ru', 'GET', '/posts/3/edit'];
+        yield [TEST_USER_ID, 'GET', '/posts/' . TEST_ADMIN_POST_ID . '/edit'];
     }
 
     /**
@@ -35,10 +35,10 @@ class PostsControllerTest  extends WebTestCase
      *
      * @dataProvider getEditUrls
      */
-    public function testCanEdit(string $userMail, string $httpMethod, string $url): void
+    public function testCanEdit(int $userId, string $httpMethod, string $url): void
     {
         $client = static::createClient();
-        $user = static::getContainer()->get(UserRepository::class)->findOneByEmail($userMail);
+        $user = static::getContainer()->get(UserRepository::class)->find($userId);
         $client->loginUser($user);
         $client->request($httpMethod, $url);
 
@@ -47,7 +47,7 @@ class PostsControllerTest  extends WebTestCase
 
     public function getEditUrls(): ?\Generator
     {
-        yield ['222@mail.ru', 'GET', '/posts/2/edit'];
-        yield ['555@mail.ru', 'GET', '/posts/2/edit'];
+        yield [TEST_USER_ID, 'GET', '/posts/' . TEST_USER_POST_ID . '/edit'];
+        yield [TEST_ADMIN_ID, 'GET', '/posts/' . TEST_USER_POST_ID . '/edit'];
     }
 }
