@@ -25,7 +25,6 @@ class CommentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
- /*
             $context = [
                 'user_ip' => $request->getClientIp(),
                 'user_agent' => $request->headers->get('user-agent'),
@@ -33,9 +32,10 @@ class CommentController extends AbstractController
                 'permalink' => $request->getUri(),
             ];
             if (2 === $spamChecker->getSpamScore($comment, $context)) {
-                throw new \RuntimeException('Blatant spam, go away!');
+//                throw new \RuntimeException('Blatant spam, go away!');
+                throw $this->createAccessDeniedException('Blatant spam, go away!');
             }
-*/
+
             /** @var \App\Entity\User $user */
             $user = $this->getUser();
             $commentRepository->addComment([

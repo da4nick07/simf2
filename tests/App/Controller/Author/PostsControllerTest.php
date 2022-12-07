@@ -17,7 +17,7 @@ class PostsControllerTest  extends WebTestCase
     public function testAccessDenied(int $userId, string $httpMethod, string $url): void
     {
         $client = static::createClient();
-        $user = static::getContainer()->get(UserRepository::class)->find($userId);
+        $user = $client->getContainer()->get(UserRepository::class)->find($userId);
         $client->loginUser($user);
         $client->request($httpMethod, $url);
 
@@ -38,7 +38,7 @@ class PostsControllerTest  extends WebTestCase
     public function testCanEdit(int $userId, string $httpMethod, string $url): void
     {
         $client = static::createClient();
-        $user = static::getContainer()->get(UserRepository::class)->find($userId);
+        $user = $client->getContainer()->get(UserRepository::class)->find($userId);
         $client->loginUser($user);
         $client->request($httpMethod, $url);
 

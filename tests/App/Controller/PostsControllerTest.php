@@ -40,7 +40,7 @@ class PostsControllerTest extends WebTestCase
     {
         // заходим админом
         $client = static::createClient();
-        $admin = static::getContainer()->get(UserRepository::class)->find(TEST_ADMIN_ID);
+        $admin = $client->getContainer()->get(UserRepository::class)->find(TEST_ADMIN_ID);
         $client->loginUser($admin);
         $crawler = $client->request('GET', '/');
         $this->assertResponseIsSuccessful();
@@ -60,24 +60,4 @@ class PostsControllerTest extends WebTestCase
         $this->assertSelectorExists('div:contains("Ещё одна статья")');
     }
 
-    public function testAddComment(): void
-    {
-        $client = static::createClient();
-        $user = static::getContainer()->get(UserRepository::class)->find(TEST_USER_ID);
-        $client->loginUser($user);
-
-//        $post = $client->getContainer()->get('doctrine')->getRepository(Post::class)->findOneBy([]);
-//        $client->request('GET', sprintf('/posts/%s', $post->getId()));
-        $client->request('GET', '/posts/' . TEST_ADMIN_POST_ID);
-        $this->assertResponseIsSuccessful();
-
-        //  Добавление коммента
-        $crawler = $client->submitForm('Отправить', [
-            'comment_form[body]' => 'Новый коммент к статье админа',
-        ]);
-        $this->assertResponseRedirects();
-        $client->followRedirect();
-        $this->assertSelectorExists('div:contains("Новый коммент к статье админа")');
-
-    }
 }
