@@ -88,7 +88,10 @@ class CommentControllerTest extends WebTestCase
         $crawler = $client->submitForm('Отправить', [
             'comment_form[body]' => 'spam',
         ]);
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+//        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        $this->assertResponseRedirects();
+        $client->followRedirect();
+        $this->assertSelectorNotExists('div:contains("spam")');
 
     }
     public function testIndexNotSpam2(): void

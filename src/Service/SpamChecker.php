@@ -23,6 +23,10 @@ class SpamChecker
      */
     public function getSpamScore(Comment $comment, array $context): int
     {
+        // реального обращения к внешнему сервису нет
+        // потому - заглушка
+        return 1;
+
         $user = $comment->getUser();
         $response = $this->client->request('POST', $this->endpoint, [
             'body' => array_merge($context, [

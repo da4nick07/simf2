@@ -6,10 +6,12 @@ use App\Entity\Comment;
 use App\Form\CommentFormType;
 use App\Repository\CommentRepository;
 use App\Service\SpamChecker;
+use CommentMessage;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Enum\CommentStateType;
 
@@ -17,7 +19,8 @@ class CommentController extends AbstractController
 {
     #[Route('/comments/{id}/new', methods: ['POST'], name: 'comment_new')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function index(Request $request, CommentRepository $commentRepository, SpamChecker $spamChecker): Response
+//    public function index(Request $request, CommentRepository $commentRepository, SpamChecker $spamChecker): Response
+    public function index(Request $request, CommentRepository $commentRepository, MessageBusInterface $bus): Response
     {
         $postId = $request->get('id');
         $comment = new Comment();
@@ -25,27 +28,24 @@ class CommentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            /** @var \App\Entity\User $user */
+            $user = $this->getUser();
+            $commentId = $commentRepository->addComment([
+                'body' => $comment->getBody(),
+                'created_at' => date('Y-m-d H:i:s'),
+                'user_id' => $user->getId(),
+                'post_id' => $postId,
+                'state' => CommentStateType::SUBMITTED->value,
+            ]);
+
             $context = [
                 'user_ip' => $request->getClientIp(),
                 'user_agent' => $request->headers->get('user-agent'),
                 'referrer' => $request->headers->get('referer'),
                 'permalink' => $request->getUri(),
             ];
-            if (2 === $spamChecker->getSpamScore($comment, $context)) {
-//                throw new \RuntimeException('Blatant spam, go away!');
-                throw $this->createAccessDeniedException('Blatant spam, go away!');
-            }
-
-            /** @var \App\Entity\User $user */
-            $user = $this->getUser();
-            $commentRepository->addComment([
-                'body' => $comment->getBody(),
-                'created_at' => date('Y-m-d H:i:s'),
-                'user_id' => $user->getId(),
-                'post_id' => $postId,
-                'state' => CommentStateType::PUBLISHED->value,
-            ]);
-
+            $bus->dispatch(new CommentMessage($commentId, $context));
 
 //            return $this->redirectToRoute('post_show', [
 //                'id' => $postId
