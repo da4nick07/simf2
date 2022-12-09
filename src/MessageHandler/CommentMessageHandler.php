@@ -4,13 +4,20 @@ namespace App\MessageHandler;
 
 use App\Repository\CommentRepository;
 use App\Service\SpamChecker;
-use CommentMessage;
+use App\Message\CommentMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use App\Enum\CommentStateType;
+use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
+/*
+// Вариант обработчика с атрибутом
 #[AsMessageHandler]
 class CommentMessageHandler
+*/
+// Вариант обработчика с интерфейсом
+// + объявить его (обработчик) в services.yaml
+class CommentMessageHandler implements MessageHandlerInterface
 {
     private $spamChecker;
     private $entityManager;

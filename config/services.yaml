@@ -35,6 +35,9 @@ services:
     test.SpamChecker:
         alias: App\Service\SpamChecker
         public: true
+    # это если не использовать атрибут AsMessageHandler
+    App\MessageHandler\CommentMessageHandler:
+        tags: [comment_message.messenger.message_handler]
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
