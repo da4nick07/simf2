@@ -12,6 +12,15 @@ framework:
                 retry_strategy:
                     max_retries: 3
                     multiplier: 2
+            redis:
+#                dsn: '%env(MESSENGER_TRANSPORT_DSN_REDIS)%'
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+#                options:
+#                    delete_after_ack: false
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+
             failed: 'doctrine://default?queue_name=failed'
 #            sync: 'sync://'
 
@@ -22,4 +31,5 @@ framework:
 
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
-#            App\Message\CommentMessage: sync
+#            App\Message\CommentMessage: redis
+            App\Message\CommentMessage: async
