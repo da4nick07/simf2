@@ -19,8 +19,20 @@ framework:
                 # dsn: '%env(MESSENGER_TRANSPORT_DSN_REDIS)%'
                 dsn: '%env(MESSENGER_TRANSPORT_DSN_REDIS)%%env(CONSUMER_ID)%?auto_setup=true'
                 options:
+                    # чтобы посмотреть, что они там есть...
                     delete_after_ack: false
-                    delete_after_reject: false
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+            amqp:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN_AMQP)%'
+                options:
+                    # для AMQP отправьте отдельный обмен, а затем поставьте в очередь
+                    exchange:
+                        name: high
+                    queues:
+                        messages_high: ~
+
                 retry_strategy:
                     max_retries: 3
                     multiplier: 2
@@ -35,4 +47,5 @@ framework:
 
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
+
             App\Message\CommentMessage: redis
