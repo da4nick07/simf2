@@ -2,20 +2,18 @@
 
 namespace App\Controller;
 
-use App\Entity\Comment;
 use App\Form\PostType;
 use App\Form\CommentFormType;
 use App\Repository\PostRepository;
 use App\Repository\CommentRepository;
-use DateTimeImmutable;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Post;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Entity\User;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Twig\Environment;
 use App\Service\TestSrv;
 use VLib;
@@ -83,7 +81,7 @@ class PostsController extends AbstractController
         }
 
         $showDelete = $this->isGranted('ROLE_ADMIN');
-        /** @var \App\Entity\User $user */
+        /** @var User $user */
         $user = $this->getUser();
         if ( is_null( $user) ) {
             $showEdit = false;
@@ -116,7 +114,7 @@ class PostsController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var \App\Entity\User $user */
+            /** @var User $user */
             $user = $this->getUser();
 //            $post->setUser($this->getUser());
 /*
@@ -157,7 +155,7 @@ class PostsController extends AbstractController
             );
         }
 
-        /** @var \App\Entity\User $user */
+        /** @var User $user */
         $user = $this->getUser();
         $canEdit = $this->isGranted("ROLE_ADMIN") || $post->getUser()->getId() === $user->getId();
         if (!$canEdit) {
@@ -225,7 +223,7 @@ class PostsController extends AbstractController
      */
     public function canEdit(int $authorId): bool
     {
-        /** @var \App\Entity\User $user */
+        /** @var User $user */
         $curUser = $this->getUser();
 
         return $this->isGranted('IS_AUTHENTICATED_FULLY') &&

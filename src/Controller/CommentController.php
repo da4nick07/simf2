@@ -5,15 +5,14 @@ namespace App\Controller;
 use App\Entity\Comment;
 use App\Form\CommentFormType;
 use App\Repository\CommentRepository;
-use App\Service\SpamChecker;
 use App\Message\CommentMessage;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Enum\CommentStateType;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class CommentController extends AbstractController
 {
@@ -46,7 +45,12 @@ class CommentController extends AbstractController
                 'permalink' => $request->getUri(),
             ];
             $bus->dispatch(new CommentMessage($commentId, $context));
-
+/*
+            $this->addFlash(
+                'notice',
+                'Спасибо за Ваш комментарий! После проверки он будет опубликован.'
+            );
+*/
 //            return $this->redirectToRoute('post_show', [
 //                'id' => $postId
 //            ]);

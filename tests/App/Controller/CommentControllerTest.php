@@ -3,14 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
-use App\Entity\Post;
-use App\Repository\CommentRepository;
 use App\Repository\UserRepository;
 use App\Service\SpamChecker;
-use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class CommentControllerTest extends WebTestCase
 {
