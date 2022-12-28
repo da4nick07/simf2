@@ -30,7 +30,7 @@ class Comment
     private ?User $user = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $state = 0; // CommentStateType::SUBMITTED
+    private ?int $state = 0; // CommentStateType::DRAFT
 
     public function getId(): ?int
     {
@@ -90,9 +90,12 @@ class Comment
 /*
         // при ошибке будет исключение
         return match($this->state) {
-            0 => CommentStateType::SUBMITTED,
-            1 => CommentStateType::SPAM,
-            2 => CommentStateType::PUBLISHED
+            0 => CommentStateType::DRAFT,
+            1 => CommentStateType::SUBMITTED,
+            2 => CommentStateType::SPAM,
+            3 => CommentStateType::HAM,
+            4 => CommentStateType::REJECTED,
+            5 => CommentStateType::PUBLISHED
         };
 */
         // вернёт null при ошибке

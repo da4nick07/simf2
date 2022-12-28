@@ -25,7 +25,12 @@ class SpamChecker
     {
         // реального обращения к внешнему сервису нет
         // потому - заглушка
-        return 1;
+        if ( stripos( $comment->getBody(), 'spam' ) <> 0) {
+            return 2;
+        } elseif ( stripos( $comment->getBody(), 'ham' ) <> 0) {
+            return 1;
+        }
+        return 0;
 
         $user = $comment->getUser();
         $response = $this->client->request('POST', $this->endpoint, [

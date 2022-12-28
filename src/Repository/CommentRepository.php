@@ -48,7 +48,7 @@ class CommentRepository extends ServiceEntityRepository
             FROM comment c
             JOIN user u ON c.user_id = u.id
             WHERE c.post_id = :id
-            AND c.state = 1
+            AND c.state = 5
             ORDER BY c.created_at DESC');
         $res = $stmt->executeQuery(['id' => $id]);
 

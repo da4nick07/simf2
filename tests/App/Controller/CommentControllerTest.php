@@ -7,6 +7,11 @@ use App\Repository\UserRepository;
 use App\Service\SpamChecker;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/*
+ * ВНИМАНИЕ
+ * В асинхр. режиме не работает...
+ */
+
 class CommentControllerTest extends WebTestCase
 {
     public function testMock(): void
@@ -64,6 +69,29 @@ class CommentControllerTest extends WebTestCase
 
         $client = static::createClient();
         $container = $client->getContainer();
+/*
+        $c = new Comment();
+        $this->assertInstanceOf(SpamChecker::class, $mock);
+        $this->assertEquals(2, $mock->getSpamScore( $c, []));
+
+
+        $container->set(SpamChecker::class, $mock);
+        // ВАЖНО  - запрещаем перезагрузку ядра
+        $client->disableReboot();
+        $spamChecker = $container->get(SpamChecker::class);
+        $this->assertEquals(2, $spamChecker->getSpamScore( $c, []));
+
+
+        $user = $container->get(UserRepository::class)->find(TEST_USER_ID);
+        $client->loginUser($user);
+        $client->request('GET', '/posts/' . TEST_ADMIN_POST_ID);
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('div:contains("Привет, ")');
+
+
+        $spamChecker = $container->get(SpamChecker::class);
+        $this->assertEquals(2, $spamChecker->getSpamScore( $c, []));
+*/
 
         $user = $container->get(UserRepository::class)->find(TEST_USER_ID);
         $client->loginUser($user);
