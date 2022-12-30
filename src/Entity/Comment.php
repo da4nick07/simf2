@@ -103,10 +103,36 @@ class Comment
         // при ошибке будет исключение
         return CommentStateType::from($this->state);
     }
-
+/*
     public function setState(?CommentStateType $state): self
     {
         $this->state = $state->value;
+
+        return $this;
+    }
+*/
+    public function getPublishingPlace(): ?string
+    {
+        return match($this->state) {
+            0 => 'draft',
+            1 => 'submitted',
+            2 => 'spam',
+            3 => 'ham',
+            4 => 'rejected',
+            5 => 'published'
+        };
+    }
+
+    public function setPublishingPlace(string $publishingPlace): self
+    {
+        $this->state =  match($publishingPlace) {
+            'draft' => 0,
+            'submitted' => 1,
+            'spam' => 2,
+            'ham' => 3,
+            'rejected' => 4,
+            'published' => 5
+        };
 
         return $this;
     }

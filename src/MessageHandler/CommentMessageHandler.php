@@ -8,27 +8,26 @@ use App\Message\CommentMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use App\Enum\CommentStateType;
-//use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
-
-// Вариант обработчика с атрибутом
 #[AsMessageHandler]
 class CommentMessageHandler
-/*
-// Вариант обработчика с интерфейсом - устар.
-// + объявить его (обработчик) в services.yaml
-class CommentMessageHandler implements MessageHandlerInterface
-*/
 {
-    private $spamChecker;
-    private $entityManager;
-    private $commentRepository;
+    private SpamChecker $spamChecker;
+    private EntityManagerInterface $entityManager;
+    private CommentRepository $commentRepository;
+    private WorkflowInterface $commentPublishingStateMachine;
+    private MessageBusInterface $bus;
 
-    public function __construct(EntityManagerInterface $entityManager, SpamChecker $spamChecker, CommentRepository $commentRepository)
+    public function __construct(EntityManagerInterface $entityManager, SpamChecker $spamChecker, CommentRepository $commentRepository,
+                                WorkflowInterface $commentPublishingStateMachine, MessageBusInterface $bus)
     {
         $this->entityManager = $entityManager;
         $this->spamChecker = $spamChecker;
         $this->commentRepository = $commentRepository;
+        $this->commentPublishingStateMachine = $commentPublishingStateMachine;
+        $this->bus = $bus;
     }
 
     public function __invoke(CommentMessage $message)
@@ -37,20 +36,25 @@ class CommentMessageHandler implements MessageHandlerInterface
         if (!$comment) {
             return;
         }
-/*
-        if (2 === $this->spamChecker->getSpamScore($comment, $message->getContext())) {
-            $comment->setState(CommentStateType::SPAM);
-        } else {
-            $comment->setState(CommentStateType::PUBLISHED);
-        }
-*/
-        $state = match ($this->spamChecker->getSpamScore($comment, $message->getContext())) {
-            0 => CommentStateType::PUBLISHED,
-            2 => CommentStateType::SPAM,
-            default => CommentStateType::HAM
-        };
-        $comment->setState($state);
-        $this->entityManager->flush();
-    }
 
+        if ($this->commentPublishingStateMachine->can($comment, 'review')) {
+            $this->commentPublishingStateMachine->apply($comment, 'review');
+            $this->entityManager->flush();
+            $this->bus->dispatch($message);
+        } elseif ( $comment->getPublishingPlace() === 'submitted') {
+            $score = $this->spamChecker->getSpamScore($comment, $message->getContext());
+
+            $transition = match ($score) {
+                0 => 'publish',
+                2 => 'to_spam',
+                default => 'to_ham'
+            };
+            $this->commentPublishingStateMachine->apply($comment, $transition);
+            $this->entityManager->flush();
+            $this->bus->dispatch($message);
+
+        }
+
+
+    }
 }

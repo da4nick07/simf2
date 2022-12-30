@@ -1,0 +1,35 @@
+framework:
+  workflows:
+    comment_publishing:
+      type: 'state_machine' # 'workflow' # or 'state_machine'
+      audit_trail:
+        enabled: true
+      marking_store:
+        type: 'method'
+        property: 'publishingPlace'
+      supports:
+        - App\Entity\Comment
+      initial_marking: draft
+      places:
+        - draft
+        - submitted
+        - spam
+        - ham
+        - rejected
+        - published
+      transitions:
+        review:
+          from: draft
+          to:   submitted
+        to_spam:
+          from: submitted
+          to:   spam
+        to_ham:
+          from: submitted
+          to:   ham
+        publish:
+          from: [submitted, ham]
+          to:   published
+        reject:
+          from: ham
+          to:   rejected

@@ -18,7 +18,6 @@ class CommentController extends AbstractController
 {
     #[Route('/comments/{id}/new', methods: ['POST'], name: 'comment_new')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-//    public function index(Request $request, CommentRepository $commentRepository, SpamChecker $spamChecker): Response
     public function index(Request $request, CommentRepository $commentRepository, MessageBusInterface $bus): Response
     {
         $postId = $request->get('id');
@@ -36,6 +35,7 @@ class CommentController extends AbstractController
                 'user_id' => $user->getId(),
                 'post_id' => $postId,
                 'state' => CommentStateType::SUBMITTED->value,
+//                'publishing_place' => 1, // submitted
             ]);
 
             $context = [
