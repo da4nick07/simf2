@@ -1,0 +1,19 @@
+{% extends 'base2.html.twig' %}
+
+{% block content %}
+    <h1 style="text-align: center">Админка</h1>
+{% endblock %}
+
+{% block user_menu %}
+    <div class="bg-info">
+        <br>
+        <h6>Админка !</h6>
+        {% block adm_menu %}
+        <ul>
+            <li><a href="{{ path('users') }}">Пользователи</a></li>
+            <li><a href="{{ path('comments') }}">Комментарии</a></li>
+        </ul>
+        {% endblock %}
+    </div>
+
+{% endblock %}

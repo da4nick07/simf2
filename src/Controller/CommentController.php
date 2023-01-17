@@ -17,8 +17,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class CommentController extends AbstractController
 {
     #[Route('/comments/{id}/new', methods: ['POST'], name: 'comment_new')]
-    #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function index(Request $request, CommentRepository $commentRepository, MessageBusInterface $bus): Response
+    #[IsGranted("IS_AUTHENTICATED_FULLY")]
+    public function addComment(Request $request, CommentRepository $commentRepository, MessageBusInterface $bus): Response
     {
         $postId = $request->get('id');
         $comment = new Comment();
@@ -59,4 +59,5 @@ class CommentController extends AbstractController
             'id' => $postId
         ]);
     }
+
 }

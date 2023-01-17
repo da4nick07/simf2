@@ -67,6 +67,12 @@
                                 {% if (showDelete is defined) and (showDelete) %}
                                     <li><a href="{{ path('post_delete', {'id': post.id}) }}">Удалить</a></li>
                                 {% endif %}
+
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <br>
+                                    <a href={{ path('admin') }}>Админка</a>
+                                {% endif %}
+
                             {% endif %}
                             <div id = "user_menu">
                                 {% block user_menu %}
