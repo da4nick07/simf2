@@ -1,37 +1,23 @@
 {% extends 'admin/base_adm.html.twig' %}
 
 {% block content %}
+    {% if is_granted('ROLE_ADMIN') %}
     <h5 style="text-align: center">Пользователи</h5>
     <br>
 
-    <form class="row g-3" method="post" action="{{ path('users') }}">
+    <form class="row g-3" method="post" action="{{ path('users_post') }}">
         <div class="col md-3">
             <div class="input-group">
                 <label class="input-group-text" for="status">Status</label>
                 <select class="form-select" id="status"  name="st">
-                    <option selected>Неподтверждённые</option>
                     <option value="1">Все</option>
                     <option value="2">Подтверждённые</option>
                     <option value="3">Неподтверждённые</option>
                 </select>
             </div>
-            <div class="input-group">
-                <input type="number" class="form-control" placeholder="state" aria-label="Имя"  name="st2">
-            </div>
         </div>
         <div class="col md-2">
             <button type="submit" class="btn btn-primary">Обновить</button>
-        </div>
-    </form>
-
-
-    <form class="row my-2" action="{{ path('users') }}" method="get">
-        <div class="col my-auto">
-            <label for="search" class="visually-hidden">Поиск</label>
-            <input type="search" class="form-control" id="search" placeholder="Поиск..."  name="t">
-        </div>
-        <div class="col-3 my-auto">
-            <button type="submit" class="btn btn-primary">Найти</button>
         </div>
     </form>
 
@@ -48,21 +34,22 @@
     </div>
 
     <br>
-    <div>
-    <table class="table table-hover table-sm">
-        <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">id</th>
-            <th scope="col">created_at</th>
-            <th scope="col">email</th>
-            <th scope="col">roles</th>
-            <th scope="col">enabled</th>
-        </tr>
-        </thead>
-        <tbody>
+    <div style="overflow-x:auto;">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">id</th>
+                <th scope="col">created_at</th>
+                <th scope="col">email</th>
+                <th scope="col">roles</th>
+                <th scope="col">enabled</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
 
-            {% for user in users %}
+                {% for user in users %}
                 <tr>
                     <th scope="row">{{ loop.index }}</th>
                     <td>{{ user.id }}</td>
@@ -74,8 +61,9 @@
                 </tr>
             {% endfor %}
 
-         </tbody>
-    </table>
+            </tbody>
+        </table>
     </div>
+    {% endif %}
 {% endblock %}
 

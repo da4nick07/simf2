@@ -35,7 +35,7 @@ class AdminController extends AbstractController
     #[Route('/users_get', name: 'users_get')]
     public function usersGet(Request $request, UserRepository $userRepository): Response
     {
-        $value = $request->query->get('_state') ?? 1;
+        $value = (int)($request->query->get('_state') ?? 1);
         switch ($value) {
             case 3:
                 $users = $userRepository->readAll();
@@ -46,11 +46,11 @@ class AdminController extends AbstractController
             default:
                 $users = $userRepository->readByEnabled(0);
          }
-        $out = '$' . $value;
 
 
         return $this->render('admin/users_get.html.twig', [
             'users' => $users,
+            'state' => $value
         ]);
     }
 
@@ -68,7 +68,7 @@ class AdminController extends AbstractController
 
 //        if ($value === 3) {$value}
 
-        return $this->render('admin/users.html.twig', [
+        return $this->render('admin/users_post.html.twig', [
             'users' => $userRepository->readAll(),
 //            'users' => $userRepository->findBy(['enabled'=>$out]),
             'state' => $out,
