@@ -1,0 +1,80 @@
+{% extends 'admin/base_adm.html.twig' %}
+
+{% block content %}
+    {% if is_granted('ROLE_ADMIN') %}
+    <h5 style="text-align: center">Пользователи</h5>
+    <br>
+
+    <form action="{{ path('users_get') }}" method="get">
+        <div class="row g-3">
+        <div class="col-sm-5 col-md-4">
+            <div class="input-group">
+                <label class="input-group-text" for="status">Enabled</label>
+                <select class="form-select" id="status"  name="_state">
+
+                    {% if state == 3 %}
+                        <option value="3" selected>Все</option>
+                    {% else %}
+                        <option value="3">Все</option>
+                    {% endif %}
+
+                    {% if state == 2 %}
+                        <option value="2" selected>Подтверждённые</option>
+                    {% else %}
+                        <option value="2">Подтверждённые</option>
+                    {% endif %}
+
+                    {% if state == 1 %}
+                        <option value="1" selected>Неподтверждённые</option>
+                    {% else %}
+                        <option value="1">Неподтверждённые</option>
+                    {% endif %}
+
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm">
+            <button type="submit">Обновить</button>
+        </div>
+        </div>
+    </form>
+
+    <br>
+    <div style="overflow-x:auto;">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">id</th>
+                <th scope="col">created_at</th>
+                <th scope="col">email</th>
+                <th scope="col">roles</th>
+                <th scope="col">enabled</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for user in users %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.created_at }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.roles }}</td>
+                    <td>{{ user.enabled }}</td>
+                    <td>
+                        <div>
+                            <a class="btn btn-primary" href="{{ path('user_enable', {'id': user.id}) }}" role="button">Подтвердить</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+{% endblock %}
+

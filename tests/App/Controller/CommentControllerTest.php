@@ -130,7 +130,7 @@ class CommentControllerTest extends WebTestCase
 //            ->onlyMethods(['getSpamScore'])
             ->getMock();
         $mock->method('getSpamScore')
-            ->willReturn(1);
+            ->willReturn(0);
 //            ->will($this->returnArgument(0));
 
         $client = static::createClient();
@@ -148,7 +148,7 @@ class CommentControllerTest extends WebTestCase
         $client->disableReboot();
         $spamChecker = $container->get(SpamChecker::class);
         $c = new Comment();
-        $this->assertEquals(1, $spamChecker->getSpamScore( $c, []));
+        $this->assertEquals(0, $spamChecker->getSpamScore( $c, []));
 
 
         $crawler = $client->submitForm('Отправить', [

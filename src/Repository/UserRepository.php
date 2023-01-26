@@ -56,6 +56,56 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->add($user, true);
     }
 
+    public function readAll(): ?array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT u.id, u.created_at, u.email, u.roles, u.enabled
+            FROM user u');
+        $res = $stmt->executeQuery();
+
+        // возвращает массив массивов (т.e. сырой набор данных)
+        return $res->fetchAllAssociative();
+    }
+
+    public function readByEnabled($value): ?array
+    {
+        /*
+                $query = $this->getEntityManager()->createQuery(
+                    'SELECT p.id, p.title, p.body, p.created_at, u.email
+                    FROM App\Entity\Post p
+                    JOIN p.user u');
+
+                return $query->getScalarResult();
+        */
+        $conn = $this->getEntityManager()->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT u.id, u.created_at, u.email, u.roles, u.enabled 
+            FROM user u
+            WHERE enabled = :en');
+        $res = $stmt->executeQuery(['en'=>$value]);
+
+        // возвращает массив массивов (т.e. сырой набор данных)
+        return $res->fetchAllAssociative();
+    }
+
+//    /**
+//     * @return User[] Returns an array of User objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('u')
+//            ->andWhere('u.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('u.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */

@@ -10,7 +10,8 @@
         <h6>Админка !</h6>
         {% block adm_menu %}
         <ul>
-            <li><a href="{{ path('users') }}">Пользователи</a></li>
+            <li><a href="{{ path('users_get') }}">Пользователи, get</a></li>
+            <li><a href="{{ path('users_post') }}">Пользователи, post</a></li>
             <li><a href="{{ path('comments') }}">Комментарии</a></li>
         </ul>
         {% endblock %}

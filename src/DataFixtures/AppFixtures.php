@@ -14,18 +14,21 @@ class AppFixtures extends Fixture
         $user1 = new User();
         $user1->setEmail('111@mail.ru');
         $user1->setPassword(password_hash('111', PASSWORD_DEFAULT));
+        $user1->setCreatedAt(new \DateTimeImmutable());
         $manager->persist($user1);
 
         $user2 = new User();
         $user2->setEmail('222@mail.ru');
         $user2->setPassword(password_hash('222', PASSWORD_DEFAULT));
         $user2->setEnabled();
+        $user2->setCreatedAt(new \DateTimeImmutable());
         $manager->persist($user2);
 
         $userAdmin = new User();
         $userAdmin->setEmail('555@mail.ru');
         $userAdmin->setPassword(password_hash('555', PASSWORD_DEFAULT));
         $userAdmin->setEnabled();
+        $userAdmin->setCreatedAt(new \DateTimeImmutable());
         $userAdmin->setRoles(['ROLE_ADMIN']);
         $manager->persist($userAdmin);
 
