@@ -10,19 +10,28 @@
         </div>
     {% endif %}
 
-    <form action="{{ path('app_login') }}" method="post">
-        <label for="username">Email:</label>
-        <input type="text" id="username" name="_username" value="{{ last_username }}"/> <br>
+    {% if app.user %}
+        <div class="mb-3">
+            Вы вошли как: {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Выйти</a>
+            <p><a href="{{ path('homepage') }}">На главную</a></p>
+        </div>
+    {% endif %}
 
-        <label for="password">Пароль:</label>
-        <input type="password" id="password" name="_password"/>
+    {% if not app.user %}
+        <form action="{{ path('app_login') }}" method="post">
+            <label for="username">Email:</label>
+            <input type="text" id="username" name="_username" value="{{ last_username }}"/> <br>
 
-        {# CSRF-защита #}
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="_password"/>
 
-        {# Если вы хотите контролировать URL, по которому перенаправляется пользователь при успешном входе
+            {# CSRF-защита #}
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            {# Если вы хотите контролировать URL, по которому перенаправляется пользователь при успешном входе
         <input type="hidden" name="_target_path" value="/account"/> #}
 
-        <button type="submit">login</button>
-    </form>
+            <button type="submit">login</button>
+        </form>
+    {% endif %}
 {% endblock %}

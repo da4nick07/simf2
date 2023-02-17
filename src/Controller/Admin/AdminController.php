@@ -2,6 +2,8 @@
 
 namespace App\Controller\Admin;
 
+use App\Form\CommentFormType;
+use App\Form\UsersFilterFormType;
 use App\Repository\CommentRepository;
 use App\Repository\UserRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -35,6 +37,7 @@ class AdminController extends AbstractController
     #[Route('/users_get', name: 'users_get')]
     public function usersGet(Request $request, UserRepository $userRepository): Response
     {
+        // если метод get - то поля формы достаём так
         $value = (int)($request->query->get('_state') ?? 1);
         switch ($value) {
             case 3:
@@ -54,27 +57,35 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/users_post', name: 'users_post')]
+    #[Route('/users_post', methods: ['GET', 'POST'], name: 'users_post')]
     public function usersPost(Request $request, UserRepository $userRepository): Response
     {
-        $value = (string)$request->query->getInt('st');   //get('st');
-        $out = '$' . $value;
+//        $formData = null;
+//        $formData = ['_state'=>null];
+//        $form = $this->createForm(UsersFilterFormType::class, $formData);
+        $form = $this->createForm(UsersFilterFormType::class);
+        $form->handleRequest($request);
 
-        $value = (string)$request->query->getInt('st2');
-        $out2 = '$' . $value;
+        if ( $request->isMethod('GET')) {
+            $method = 'GET';
+            $_state = 0;
+        } else {
+            $method = 'PUT';
+//            $_state = $request->request->getInt('_state');
+            $_state = $request->request->get('_state');
+        }
+        // Оставил для отладки
+        $isSubmitted = $form->isSubmitted() ? 'ДА' : 'НЕТ';
+        $out = '$' . $_state . ';';
 
-        $value = (string)$request->query->get('t');
-        $out3 = '$' . $value;
-
-//        if ($value === 3) {$value}
 
         return $this->render('admin/users_post.html.twig', [
-            'users' => $userRepository->readAll(),
-//            'users' => $userRepository->findBy(['enabled'=>$out]),
-            'state' => $out,
-            'state2' => $out2,
-            'state3' => $out3,
-//            'showInsert' => $this->isGranted('ROLE_ADMIN')
+            'form' => $form->createView(),
+            '_state' => $_state,
+            'out' => $out,
+            'isSubmitted' => $isSubmitted,
+            'method' => $method,
+//            'users' => $userRepository->findBy(['enabled'=>$_state]),
         ]);
     }
 
