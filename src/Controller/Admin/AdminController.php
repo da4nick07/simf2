@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\iterator;
+use App\Enum\UserState;
 
 #[Route('/admin')]
 #[IsGranted('ROLE_ADMIN')]
@@ -60,32 +61,41 @@ class AdminController extends AbstractController
     #[Route('/users_post', methods: ['GET', 'POST'], name: 'users_post')]
     public function usersPost(Request $request, UserRepository $userRepository): Response
     {
-//        $formData = null;
-//        $formData = ['_state'=>null];
-//        $form = $this->createForm(UsersFilterFormType::class, $formData);
-        $form = $this->createForm(UsersFilterFormType::class);
+        // дефолтные значения в форме
+        $formData = ['_state'=>UserState::NotEnabled];
+        $form = $this->createForm(UsersFilterFormType::class, $formData);
         $form->handleRequest($request);
 
         if ( $request->isMethod('GET')) {
             $method = 'GET';
-            $_state = 0;
+            $_state = UserState::NotEnabled;
+            $out_state = UserState::NotEnabled->value;
         } else {
             $method = 'PUT';
-//            $_state = $request->request->getInt('_state');
-            $_state = $request->request->get('_state');
+            /** @var UserState $_state */
+            $_state = $form->getData()['_state'];
+            $out_state = $_state->value;
         }
         // Оставил для отладки
         $isSubmitted = $form->isSubmitted() ? 'ДА' : 'НЕТ';
-        $out = '$' . $_state . ';';
 
+        switch ($_state) {
+            case UserState::All:
+                $users = $userRepository->readAll();
+                break;
+            case UserState::Enabled:
+                $users = $userRepository->readByEnabled(1);
+                break;
+            default:
+                $users = $userRepository->readByEnabled(0);
+        }
 
         return $this->render('admin/users_post.html.twig', [
             'form' => $form->createView(),
-            '_state' => $_state,
-            'out' => $out,
+            'out_state' => $out_state,
             'isSubmitted' => $isSubmitted,
             'method' => $method,
-//            'users' => $userRepository->findBy(['enabled'=>$_state]),
+            'users' => $users,
         ]);
     }
 
