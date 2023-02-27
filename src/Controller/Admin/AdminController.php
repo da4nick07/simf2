@@ -66,18 +66,13 @@ class AdminController extends AbstractController
         $form = $this->createForm(UsersFilterFormType::class, $formData);
         $form->handleRequest($request);
 
-        if ( $request->isMethod('GET')) {
-            $method = 'GET';
-            $_state = UserState::NotEnabled;
-            $out_state = UserState::NotEnabled->value;
-        } else {
-            $method = 'PUT';
-            /** @var UserState $_state */
-            $_state = $form->getData()['_state'];
-            $out_state = $_state->value;
+        $_state = UserState::NotEnabled;
+        if ( $request->isMethod('POST')) {
+            if ($form->isSubmitted() && $form->isValid()) {
+                /** @var UserState $_state */
+                $_state = $form->getData()['_state'];
+            }
         }
-        // Оставил для отладки
-        $isSubmitted = $form->isSubmitted() ? 'ДА' : 'НЕТ';
 
         switch ($_state) {
             case UserState::All:
@@ -92,9 +87,6 @@ class AdminController extends AbstractController
 
         return $this->render('admin/users_post.html.twig', [
             'form' => $form->createView(),
-            'out_state' => $out_state,
-            'isSubmitted' => $isSubmitted,
-            'method' => $method,
             'users' => $users,
         ]);
     }
