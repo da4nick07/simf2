@@ -37,6 +37,7 @@ class PostsController extends AbstractController
 
         // шаблон для вывода статьи задаём как параметр
         return $this->render('posts/index2.html.twig', [
+            '_SEARCH' => true,
             'posts' => $postRepository->readAllJoined(),
             'tpl' => $twig->load('posts/_article_tpl.html.twig'),
             'showInsert' => $this->isGranted('ROLE_ADMIN')
@@ -209,6 +210,7 @@ class PostsController extends AbstractController
         $value = (string)$request->query->get('t');
         // шаблон для вывода статьи задаём как параметр
         return $this->render('posts/index2.html.twig', [
+            '_SEARCH' => true,
             'posts' => $postRepository->findByTitle($value),
             'tpl' => $twig->load('posts/_article_tpl.html.twig'),
             'showInsert' => $this->isGranted('ROLE_ADMIN'),

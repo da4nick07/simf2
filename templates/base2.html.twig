@@ -2,6 +2,7 @@
 <html lang="ru">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Blog simf2{% endblock %}</title>
         {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
         {% block stylesheets %}
@@ -22,24 +23,22 @@
         <div class="row">
             <div class="col-sm-10 mx-auto border border-dark bg-danger ">
                 <div class="row">
-                    <div class="col-12 col-md-8 bg-info" >
-                        <form class="row my-2" action="{{ path('post_search') }}" method="get">
-                            <div class="col my-auto">
-                                <label for="search" class="visually-hidden">Поиск</label>
-                                <input type="search" class="form-control" id="search" placeholder="Поиск..."  name="t">
-                            </div>
-                            <div class="col-3 my-auto">
-                                <button type="submit" class="btn btn-primary">Найти</button>
-                            </div>
-                        </form>
-{#
-                        <form class="form-inline my-2" action="{{ path('post_search') }}" method="get">
-                            <input class="form-control" type="search" aria-label="Search" name="t">
-                            <button class="btn btn-default" type="submit">Найти.</button>
-                        </form>
-#}
-                    </div>
-                    <div class="col col-md-4 text-center my-auto reg-min-width bg-info">
+
+                    {% if _SEARCH is defined %}
+                        <div class="col-12 col-md-8 bg-info" >
+                            <form class="row my-2" action="{{ path('post_search') }}" method="get">
+                                <div class="col my-auto">
+                                    <label for="search" class="visually-hidden">Поиск</label>
+                                    <input type="search" class="form-control" id="search" placeholder="Поиск..."  name="t">
+                                </div>
+                                <div class="col-3 my-auto">
+                                    <button type="submit" class="btn btn-primary">Найти</button>
+                                </div>
+                            </form>
+                        </div>
+                    {% endif %}
+
+                    <div class="col text-end my-auto reg-min-width bg-info">
                         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                             Привет, {{app.user.email}}  | <a href={{ path('app_logout') }}>Выйти</a>
                         {% else %}
@@ -48,7 +47,6 @@
                     </div>
                 </div>
                 <div class="row border-top border-dark">
-{#                     <div class="col-md-10 col-9 bg-info" id = "content"> #}
                     <div class="col bg-info" id = "content">
                         {% block content %}
                             Контент
@@ -82,6 +80,46 @@
                         </ul>
                     </div>
                 </div>
+
+                <div class="row border-top border-dark">
+                    <div class="col bg-info">
+                        <button class="btn btn-primary" type="button" onClick = "sortTable2(0, -1)">test ajax</button>
+                    </div>
+                </div>
+
+                <div id="test_ajax"></div>
+
+                <script>
+                    function sortTable2( sortby, desc){
+                        $.ajax({
+                            url: '{{ path('app_test_ajax') }}',
+                            method: 'post',
+                            dataType: 'html',
+                            data: {sortby: sortby, desc:desc},
+                            success: function (data) {
+                                $("#test_ajax").html(data);
+                            },
+                            error: function (jqXHR, exception) {
+                                if (jqXHR.status === 0) {
+                                    alert('Not connect. Verify Network.');
+                                } else if (jqXHR.status == 404) {
+                                    alert('Requested page not found (404).');
+                                } else if (jqXHR.status == 500) {
+                                    alert('Internal Server Error (500).');
+                                } else if (exception === 'parsererror') {
+                                    alert('Requested JSON parse failed.');
+                                } else if (exception === 'timeout') {
+                                    alert('Time out error.');
+                                } else if (exception === 'abort') {
+                                    alert('Ajax request aborted.');
+                                } else {
+                                    alert('Uncaught Error. ' + jqXHR.responseText);
+                                }
+                            }
+                        });
+                    }
+                </script>
+
                 <div class="row border-top border-dark">
                     <div class="col text-center bg-info">
                         Все права защищены (c) Блог на Symfony
@@ -91,43 +129,5 @@
         </div>
     </div>
 
-
-{#
-        {% block header %}
-            <div id = "header">
-                <h1> {% if header is not defined %} Блог на Symfony {% else %} {{header}} {% endif %} </h1>
-            </div>
-        {% endblock %}
-
-        <div id = "reg_block">
-            {% block find_block %}
-                <div>
-                    Блок поиска
-                </div>
-            {% endblock %}
-
-            {% block hi_block %}
-                <div id = "hi_block">
-                    {% if app.user %}
-                        Привет, {{app.user.email}}  | <a href={{ path('app_logout') }}>Выйти</a>
-                    {% else %}
-                        <a href={{ path('app_login') }}>Войти</a> | <a href={{ path('app_register') }}>Зарегестрироваться</a>
-                    {% endif %}
-                </div>
-            {% endblock %}
-        </div>
-
-        {% block content %}
-            <div id = "content">
-                Здесь д.б. контент
-            </div>
-        {% endblock %}
-
-        {% block footer %}
-            <div id = "footer">
-                Все права защищены (c) Блог на Symfony
-            </div>
-        {% endblock %}
-#}
     </body>
 </html>

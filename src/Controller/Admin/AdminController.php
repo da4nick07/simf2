@@ -67,27 +67,95 @@ class AdminController extends AbstractController
         $form->handleRequest($request);
 
         $_state = UserState::NotEnabled;
+        $is_first = true;
         if ( $request->isMethod('POST')) {
             if ($form->isSubmitted() && $form->isValid()) {
                 /** @var UserState $_state */
                 $_state = $form->getData()['_state'];
+                $is_first = false;
             }
         }
 
         switch ($_state) {
             case UserState::All:
                 $users = $userRepository->readAll();
+                $status = -1;
                 break;
             case UserState::Enabled:
                 $users = $userRepository->readByEnabled(1);
+                $status = 1;
                 break;
             default:
                 $users = $userRepository->readByEnabled(0);
+                $status = 0;
         }
 
         return $this->render('admin/users_post.html.twig', [
             'form' => $form->createView(),
             'users' => $users,
+            'status' =>$status,
+        ]);
+    }
+
+    #[Route('/users_ajax', name: 'users_ajax')]
+    public function usersAjax(Request $request, UserRepository $userRepository): Response
+    {
+        // проверка на AJAX запрос
+        if ($request->isXmlHttpRequest()) {
+            switch ($_POST['status']) {
+                case -1: //UserState::All:
+                    $users = $userRepository->readAll();
+                    break;
+                case 1: // UserState::Enabled:
+                    $users = $userRepository->readByEnabled(1);
+                    break;
+                default:
+                    $users = $userRepository->readByEnabled(0);
+            }
+
+            return $this->render('admin/users_table.html.twig', [
+                'users' => $users,
+                'status' =>$_POST['status'],
+            ]);
+        }
+            /*
+                    if ( isset($_POST['sortby']) && ( isset($_POST['desc'])) ) {
+                        switch ($_POST['sortby']) {
+                            case 1:
+                                if ( $_POST['desc'] == 1) {
+                                    function sorter(array $a, array $b) {
+                                        return $b['name'] <=> $a['name'];
+                                    }
+                                } else {
+                                    function sorter(array $a, array $b) {
+                                        return $a['name'] <=> $b['name'];
+                                    }
+                                }
+                                $_DESC1 = $_POST['desc'];
+                                break;
+                            case 2:
+                                if ( $_POST['desc'] == 1) {
+                                    function sorter(array $a, array $b) {
+                                        return $b['rate'] <=> $a['rate'];
+                                    }
+                                } else {
+                                    function sorter(array $a, array $b) {
+                                        return $a['rate'] <=> $b['rate'];
+                                    }
+                                }
+                                $vars['_DESC2'] = $_POST['desc'];
+                                break;
+                        }
+                        usort($vars['_MEMBERS'], 'sorter');
+
+                    } else {
+                        $sortby = 'NO!';
+                        $desc = 'NO!';
+                    }
+            */
+        return $this->render('admin/users_table.html.twig', [
+            'users' => [],
+            'status' =>0,
         ]);
     }
 
