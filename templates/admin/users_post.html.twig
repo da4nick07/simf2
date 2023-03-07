@@ -48,56 +48,10 @@
 #}
 
         <br>
-{#
-    <div style="overflow-x:auto;">
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">
-                    <div class="d-grid">
-                        <button class="btn btn-primary" type="button" onClick = "sortTable(0, -1)">id</button>
-                    </div>
-                </th>
-                <th scope="col">
-                    <div class="d-grid">
-                        <button class="btn btn-primary" type="button" onClick = "sortTable(0, -1)">created_at</button>
-                    </div>
-                </th>
-                <th scope="col">email</th>
-                <th scope="col">roles</th>
-                <th scope="col">enabled</th>
-                <th scope="col"></th>
-            </tr>
-            </thead>
-            <tbody>
 
-                {% for user in users %}
-                <tr>
-                    <th scope="row">{{ loop.index }}</th>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.created_at }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.roles }}</td>
-                    <td>{{ user.enabled }}</td>
-                    <td><a class="btn btn-primary" href="{{ path('user_enable', {'id': user.id}) }}" role="button">Подтвердить</a></td>
-                </tr>
-            {% endfor %}
-
-            </tbody>
-        </table>
+    <div id="table">
+        {% include 'admin/_users_table.html.twig' %}
     </div>
-#}
-
-        <div id="table">
-            Блок с таблицей, first.
-            <br>
-            <button class="btn btn-primary" type="button" onClick = "sortTable( {{ status }}, 0, -1)">id</button>
-            <br>
-            status = {{ status }}
-
-        </div>
-
         <script>
             function sortTable( status, sortby, desc){
                 $.ajax({

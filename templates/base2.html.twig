@@ -82,45 +82,6 @@
                 </div>
 
                 <div class="row border-top border-dark">
-                    <div class="col bg-info">
-                        <button class="btn btn-primary" type="button" onClick = "sortTable2(0, -1)">test ajax</button>
-                    </div>
-                </div>
-
-                <div id="test_ajax"></div>
-
-                <script>
-                    function sortTable2( sortby, desc){
-                        $.ajax({
-                            url: '{{ path('app_test_ajax') }}',
-                            method: 'post',
-                            dataType: 'html',
-                            data: {sortby: sortby, desc:desc},
-                            success: function (data) {
-                                $("#test_ajax").html(data);
-                            },
-                            error: function (jqXHR, exception) {
-                                if (jqXHR.status === 0) {
-                                    alert('Not connect. Verify Network.');
-                                } else if (jqXHR.status == 404) {
-                                    alert('Requested page not found (404).');
-                                } else if (jqXHR.status == 500) {
-                                    alert('Internal Server Error (500).');
-                                } else if (exception === 'parsererror') {
-                                    alert('Requested JSON parse failed.');
-                                } else if (exception === 'timeout') {
-                                    alert('Time out error.');
-                                } else if (exception === 'abort') {
-                                    alert('Ajax request aborted.');
-                                } else {
-                                    alert('Uncaught Error. ' + jqXHR.responseText);
-                                }
-                            }
-                        });
-                    }
-                </script>
-
-                <div class="row border-top border-dark">
                     <div class="col text-center bg-info">
                         Все права защищены (c) Блог на Symfony
                     </div>
