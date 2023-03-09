@@ -9,4 +9,16 @@ enum CommentStateType : int
     case HAM = 3;
     case REJECTED = 4;
     case PUBLISHED = 5;
- }
+
+    public function getName() : string
+    {
+        return match ($this) {
+            CommentStateType::DRAFT => 'Черновики',
+            CommentStateType::SUBMITTED => 'Отправленные',
+            CommentStateType::SPAM => 'Спам',
+            CommentStateType::HAM => 'HAM',
+            CommentStateType:: REJECTED => 'Отклонённые',
+            CommentStateType::PUBLISHED => 'Опубликованные',
+        };
+    }
+}

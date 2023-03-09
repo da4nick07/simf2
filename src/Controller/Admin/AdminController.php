@@ -2,7 +2,9 @@
 
 namespace App\Controller\Admin;
 
+use App\Enum\CommentStateType;
 use App\Form\CommentFormType;
+use App\Form\CommetnsFilterFormType;
 use App\Form\UsersFilterFormType;
 use App\Repository\CommentRepository;
 use App\Repository\UserRepository;
@@ -25,13 +27,71 @@ class AdminController extends AbstractController
         return $this->render('admin/base_adm.html.twig');
     }
 
-    #[Route('/comments', methods: ['GET'], name: 'comments')]
+    #[Route('/comments', methods: ['GET', 'POST'], name: 'comments')]
     public function comments(Request $request, CommentRepository $commentRepository): Response
     {
+        $formData = ['_state'=>CommentStateType::SUBMITTED];
+        $form = $this->createForm(CommetnsFilterFormType::class, $formData);
         return $this->render('admin/comments.html.twig', [
-//            'posts' => $postRepository->readAllJoined(),
-//            'tpl' => $twig->load('posts/_article_tpl.html.twig'),
-//            'showInsert' => $this->isGranted('ROLE_ADMIN')
+            'form' => $form->createView(),
+//            'users' => $users,
+//            'status' =>$status,
+        ]);
+    }
+
+    #[Route('/comments_ajax', name: 'comments_ajax')]
+    public function commentsAjax(Request $request, UserRepository $userRepository): Response
+    {
+/*
+        // проверка на AJAX запрос
+        if ($request->isXmlHttpRequest()) {
+            // ес-но, что $users можно передать как параметр или в сессию положить...
+            $users = match ($_POST['status']) {
+                '-1' => $userRepository->readAll(),
+                '1'  => $userRepository->readByEnabled(1),
+                default => $userRepository->readByEnabled(0),
+            };
+
+
+            if ( isset( $_POST['sortby'] )) {
+                switch ($_POST['sortby'] ) {
+                    case 1:
+                        if ( $_POST['desc'] == -1) {
+                            function cmp2(array $a, array $b) {
+                                return $b['id'] <=> $a['id'];
+                            }
+                        } else {
+                            function cmp2(array $a, array $b) {
+                                return $a['id'] <=> $b['id'];
+                            }
+                        }
+                        break;
+                    case 2:
+                        if ( $_POST['desc'] == -1) {
+                            function cmp2(array $a, array $b) {
+                                return $b['created_at'] <=> $a['created_at'];
+                            }
+                        } else {
+                            function cmp2(array $a, array $b) {
+                                return $a['created_at'] <=> $b['created_at'];
+                            }
+                        }
+                        break;
+                }
+                usort($users, 'App\Controller\Admin\cmp2');
+            }
+
+            return $this->render('admin/_users_table.html.twig', [
+                'users' => $users,
+                'status' =>$_POST['status'],
+                'sortby' =>$_POST['sortby'],
+                'desc' => $_POST['desc'],
+            ]);
+        }
+*/
+        return $this->render('admin/_comments_table.html.twig', [
+            'comments' => [],
+            'status' =>0,
         ]);
     }
 
