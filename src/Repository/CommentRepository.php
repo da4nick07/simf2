@@ -70,6 +70,22 @@ class CommentRepository extends ServiceEntityRepository
         return $conn->lastInsertId();
     }
 
+    public function readAllByState( int $st, string $d1, string $d2): ?array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT c.id, c.body, c.created_at, u.email
+            FROM comment c
+            JOIN user u ON c.user_id = u.id
+            WHERE c.state = :st
+            AND c.created_at between :d1 and :d2');
+        $res = $stmt->executeQuery(['st' => $st, 'd1' => $d1, 'd2' => $d2]);
+
+        // возвращает массив массивов (т.e. сырой набор данных)
+        return $res->fetchAllAssociative();
+    }
+
 //    /**
 //     * @return Comment[] Returns an array of Comment objects
 //     */

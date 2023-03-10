@@ -21,6 +21,7 @@ class UsersFilterFormType extends AbstractType
                     UserState::Enabled => UserState::Enabled->value,
                     UserState::NotEnabled  => UserState::NotEnabled->value,
                 },
+                'data' => UserState::NotEnabled,
                 'label' => 'Статус:',
 //                'label_attr' => [ 'text-align' => 'right'],
                 'constraints' => [

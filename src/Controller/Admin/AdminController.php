@@ -3,18 +3,17 @@
 namespace App\Controller\Admin;
 
 use App\Enum\CommentStateType;
-use App\Form\CommentFormType;
-use App\Form\CommetnsFilterFormType;
+use App\Form\CommentsFilterFormType;
 use App\Form\UsersFilterFormType;
 use App\Repository\CommentRepository;
 use App\Repository\UserRepository;
+use DateTime;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\iterator;
 use App\Enum\UserState;
 
 #[Route('/admin')]
@@ -30,27 +29,42 @@ class AdminController extends AbstractController
     #[Route('/comments', methods: ['GET', 'POST'], name: 'comments')]
     public function comments(Request $request, CommentRepository $commentRepository): Response
     {
-        $formData = ['_state'=>CommentStateType::SUBMITTED];
-        $form = $this->createForm(CommetnsFilterFormType::class, $formData);
+        $form = $this->createForm(CommentsFilterFormType::class);
+        $form->handleRequest($request);
+
+        $_state = CommentStateType::SUBMITTED;
+        $_startDate = new \DateTime('-2 days');
+        $_endDate = new \DateTime('now'); //  23:59:59.999
+        if ( $request->isMethod('POST')) {
+            if ($form->isSubmitted() && $form->isValid()) {
+                /** @var CommentStateType $_state */
+                $_state = $form->getData()['_state'];
+                $_startDate = $form->getData()['_startDate'];
+                $_endDate = $form->getData()['_endDate'];
+            }
+        }
+        $_startDate = $_startDate->format('Y-m-d H:i:s');
+        $_endDate = $_endDate->format('Y-m-d' . ' 23:59:59.999');
+
+        $comments = $commentRepository->readAllByState($_state->value, $_startDate, $_endDate);
+
         return $this->render('admin/comments.html.twig', [
             'form' => $form->createView(),
-//            'users' => $users,
-//            'status' =>$status,
+            'comments' => $comments,
+            'status' =>$_state->value,
+            'startDate' =>$_startDate,
+            'endDate' =>$_endDate,
         ]);
     }
 
     #[Route('/comments_ajax', name: 'comments_ajax')]
-    public function commentsAjax(Request $request, UserRepository $userRepository): Response
+    public function commentsAjax(Request $request, CommentRepository $commentRepository): Response
     {
-/*
+
         // проверка на AJAX запрос
         if ($request->isXmlHttpRequest()) {
             // ес-но, что $users можно передать как параметр или в сессию положить...
-            $users = match ($_POST['status']) {
-                '-1' => $userRepository->readAll(),
-                '1'  => $userRepository->readByEnabled(1),
-                default => $userRepository->readByEnabled(0),
-            };
+            $comments = $commentRepository->readAllByState($_POST['status'], $_POST['startDate'], $_POST['endDate']);
 
 
             if ( isset( $_POST['sortby'] )) {
@@ -66,7 +80,7 @@ class AdminController extends AbstractController
                             }
                         }
                         break;
-                    case 2:
+                    case 3:
                         if ( $_POST['desc'] == -1) {
                             function cmp2(array $a, array $b) {
                                 return $b['created_at'] <=> $a['created_at'];
@@ -77,18 +91,29 @@ class AdminController extends AbstractController
                             }
                         }
                         break;
+                    case 4:
+                        if ( $_POST['desc'] == -1) {
+                            function cmp2(array $a, array $b) {
+                                return $b['email'] <=> $a['email'];
+                            }
+                        } else {
+                            function cmp2(array $a, array $b) {
+                                return $a['email'] <=> $b['email'];
+                            }
+                        }
+                        break;
                 }
-                usort($users, 'App\Controller\Admin\cmp2');
+                usort($comments, 'App\Controller\Admin\cmp2');
             }
 
-            return $this->render('admin/_users_table.html.twig', [
-                'users' => $users,
+            return $this->render('admin/_comments_table.html.twig', [
+                'comments' => $comments,
                 'status' =>$_POST['status'],
                 'sortby' =>$_POST['sortby'],
                 'desc' => $_POST['desc'],
             ]);
         }
-*/
+
         return $this->render('admin/_comments_table.html.twig', [
             'comments' => [],
             'status' =>0,
@@ -121,9 +146,9 @@ class AdminController extends AbstractController
     #[Route('/users_post', methods: ['GET', 'POST'], name: 'users_post')]
     public function usersPost(Request $request, UserRepository $userRepository): Response
     {
-        // дефолтные значения в форме
-        $formData = ['_state'=>UserState::NotEnabled];
-        $form = $this->createForm(UsersFilterFormType::class, $formData);
+        // дефолтные значения в форме - унёс в форму
+//        $formData = ['_state'=>UserState::NotEnabled];
+        $form = $this->createForm(UsersFilterFormType::class);
         $form->handleRequest($request);
 
         $_state = UserState::NotEnabled;
