@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Class\CommentFilter;
 use App\Enum\CommentStateType;
 use App\Form\CommentsFilterFormType;
 use App\Form\UsersFilterFormType;
@@ -29,31 +30,38 @@ class AdminController extends AbstractController
     #[Route('/comments', methods: ['GET', 'POST'], name: 'comments')]
     public function comments(Request $request, CommentRepository $commentRepository): Response
     {
-        $form = $this->createForm(CommentsFilterFormType::class);
+//        $data = array( 'state' => null,  'startDate' => null,  'endDate' => null);
+        $cf = new CommentFilter();
+        $form = $this->createForm(CommentsFilterFormType::class, $cf);
         $form->handleRequest($request);
 
-        $_state = CommentStateType::SUBMITTED;
-        $_startDate = new \DateTime('-2 days');
-        $_endDate = new \DateTime('now'); //  23:59:59.999
+        $state = CommentStateType::SUBMITTED;
+        $startDate = new \DateTime('-2 days');
+        $endDate = new \DateTime('now'); //  23:59:59.999
         if ( $request->isMethod('POST')) {
             if ($form->isSubmitted() && $form->isValid()) {
                 /** @var CommentStateType $_state */
-                $_state = $form->getData()['_state'];
-                $_startDate = $form->getData()['_startDate'];
-                $_endDate = $form->getData()['_endDate'];
+/*
+                $state = $form->getData()['state'];
+                $startDate = $form->getData()['startDate'];
+                $endDate = $form->getData()['endDate'];
+*/
+                $state = $cf->state;
+                $startDate = $cf->getStartDate();
+                $endDate = $cf->endDate;
             }
         }
-        $_startDate = $_startDate->format('Y-m-d H:i:s');
-        $_endDate = $_endDate->format('Y-m-d' . ' 23:59:59.999');
+        $startDate = $startDate->format('Y-m-d H:i:s');
+        $endDate = $endDate->format('Y-m-d' . ' 23:59:59.999');
 
-        $comments = $commentRepository->readAllByState($_state->value, $_startDate, $_endDate);
+        $comments = $commentRepository->readAllByState($state->value, $startDate, $endDate);
 
         return $this->render('admin/comments.html.twig', [
             'form' => $form->createView(),
             'comments' => $comments,
-            'status' =>$_state->value,
-            'startDate' =>$_startDate,
-            'endDate' =>$_endDate,
+            'status' =>$state->value,
+            'startDate' =>$startDate,
+            'endDate' =>$endDate,
         ]);
     }
 
@@ -111,6 +119,8 @@ class AdminController extends AbstractController
                 'status' =>$_POST['status'],
                 'sortby' =>$_POST['sortby'],
                 'desc' => $_POST['desc'],
+                'startDate' =>$_POST['startDate'],
+                'endDate' =>$_POST['endDate'],
             ]);
         }
 
