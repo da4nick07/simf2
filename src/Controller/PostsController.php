@@ -200,13 +200,6 @@ class PostsController extends AbstractController
     #[Route('/posts/search', methods: ['GET'], name: 'post_search', priority: 1)]
     public function search(Request $request, PostRepository $postRepository, Environment $twig): Response
     {
-/*
-        $posts = $postRepository->findByTitle($value);
-
-        return $this->render('posts/search.html.twig', [
-            'posts' => $posts
-        ]);
-*/
         $value = (string)$request->query->get('t');
         // шаблон для вывода статьи задаём как параметр
         return $this->render('posts/index2.html.twig', [

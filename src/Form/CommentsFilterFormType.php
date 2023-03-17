@@ -72,7 +72,7 @@ class CommentsFilterFormType extends AbstractType
                         'message' => 'Дата окончания не может быть больше текущей даты...',
                     ]),
 //                    new GreaterThanOrEqual([
-//                        'propertyPath' => 'startDate',
+//                        'propertyPath' => "startDate",
 //                        'message' => 'Дата окончания периода не может быть меньше даты его начала...',
 //                    ]),
                 ]
