@@ -16,8 +16,8 @@
         {{ form_start(form, {method: 'POST', action: path('users_post')}) }}
         <div class="row g-3">
             <div class="col-sm-3">
-                {{ form_label(form._state, 'Статус: ', {'label_attr': {'class': 'uf_label'}} ) }}
-                {{ form_widget(form._state) }}
+                {{ form_label(form.state, 'Статус: ', {'label_attr': {'class': 'uf_label'}} ) }}
+                {{ form_widget(form.state) }}
             </div>
 
             <div class="col-1" style="align-self: flex-end">
@@ -55,7 +55,7 @@
         <script>
             function sortTable( status, sortby, desc){
                 $.ajax({
-                    url: '{{ path('users_ajax') }}',
+                    url: '{{ path('users_sort') }}',
                     method: 'post',
                     dataType: 'html',
                     data: {status: status, sortby: sortby, desc:desc},

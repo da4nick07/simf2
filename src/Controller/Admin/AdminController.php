@@ -10,12 +10,15 @@ use App\Repository\CommentRepository;
 use App\Repository\UserRepository;
 use DateTime;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Enum\UserState;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 #[Route('/admin')]
 #[IsGranted('ROLE_ADMIN')]
@@ -38,14 +41,9 @@ class AdminController extends AbstractController
         $state = CommentStateType::SUBMITTED;
         $startDate = new \DateTime('-2 days');
         $endDate = new \DateTime('now'); //  23:59:59.999
-        if ( $request->isMethod('POST')) {
+        if ($request->isMethod('POST')) {
             if ($form->isSubmitted() && $form->isValid()) {
                 /** @var CommentStateType $_state */
-/*
-                $state = $form->getData()['state'];
-                $startDate = $form->getData()['startDate'];
-                $endDate = $form->getData()['endDate'];
-*/
                 $state = $cf->state;
                 $startDate = $cf->getStartDate();
                 $endDate = $cf->endDate;
@@ -59,14 +57,63 @@ class AdminController extends AbstractController
         return $this->render('admin/comments.html.twig', [
             'form' => $form->createView(),
             'comments' => $comments,
-            'status' =>$state->value,
-            'startDate' =>$startDate,
-            'endDate' =>$endDate,
+            'status' => $state->value,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ]);
     }
 
-    #[Route('/comments_ajax', name: 'comments_ajax')]
-    public function commentsAjax(Request $request, CommentRepository $commentRepository): Response
+    private function funcCommentsSort(array $comments, int $sortby, int $desc): array
+    {
+        switch ($sortby) {
+            case 1:
+                if ($desc == -1) {
+                    function cmp2(array $a, array $b)
+                    {
+                        return $b['id'] <=> $a['id'];
+                    }
+                } else {
+                    function cmp2(array $a, array $b)
+                    {
+                        return $a['id'] <=> $b['id'];
+                    }
+                }
+                break;
+            case 3:
+                if ($desc == -1) {
+                    function cmp2(array $a, array $b)
+                    {
+                        return $b['created_at'] <=> $a['created_at'];
+                    }
+                } else {
+                    function cmp2(array $a, array $b)
+                    {
+                        return $a['created_at'] <=> $b['created_at'];
+                    }
+                }
+                break;
+            case 4:
+                if ($desc == -1) {
+                    function cmp2(array $a, array $b)
+                    {
+                        return $b['email'] <=> $a['email'];
+                    }
+                } else {
+                    function cmp2(array $a, array $b)
+                    {
+                        return $a['email'] <=> $b['email'];
+                    }
+                }
+                break;
+        }
+        usort($comments, 'App\Controller\Admin\cmp2');
+
+        return $comments;
+    }
+
+
+    #[Route('/comments_sort', methods: 'POST', name: 'comments_sort')]
+    public function commentsSort(Request $request, CommentRepository $commentRepository, LoggerInterface $logger): Response
     {
 
         // проверка на AJAX запрос
@@ -76,6 +123,7 @@ class AdminController extends AbstractController
 
 
             if ( isset( $_POST['sortby'] )) {
+/*
                 switch ($_POST['sortby'] ) {
                     case 1:
                         if ( $_POST['desc'] == -1) {
@@ -112,6 +160,8 @@ class AdminController extends AbstractController
                         break;
                 }
                 usort($comments, 'App\Controller\Admin\cmp2');
+*/
+                $comments = $this->funcCommentsSort( $comments, (int)$_POST['sortby'], (int)$_POST['desc']);
             }
 
             return $this->render('admin/_comments_table.html.twig', [
@@ -130,11 +180,39 @@ class AdminController extends AbstractController
         ]);
     }
 
+    #[Route('/comments/{id}/{action}', methods: ['POST'], name: 'comments_reject')]
+    public function commentAction(int $id, string $action, CommentRepository $commentRepository, WorkflowInterface $commentPublishingStateMachine,
+                                  MessageBusInterface $bus, ManagerRegistry $doctrine): Response
+    {
+        $comment = $commentRepository->find($id);
+        if (!$comment) {
+            // исключение можно и своё бросить...
+            throw $this->createNotFoundException(
+                'комментарий не найден, id '.$id
+            );
+        }
+
+        switch ($action) {
+            case 'reject':
+                if ($commentPublishingStateMachine->can($comment, 'reject')) {
+                    $commentPublishingStateMachine->apply($comment, 'review');
+                    $em = $doctrine->getManager();
+                    $em->flush();
+                    $bus->dispatch($comment);
+                }
+                break;
+        }
+
+        $comments = $commentRepository->readAllByState($state->value, $startDate, $endDate);
+        $comments = $this->funcCommentsSort( $comments, (int)$_POST['sortby'], (int)$_POST['desc']);
+        return $this->redirectToRoute('users');
+    }
+
     #[Route('/users_get', name: 'users_get')]
     public function usersGet(Request $request, UserRepository $userRepository): Response
     {
         // если метод get - то поля формы достаём так
-        $value = (int)($request->query->get('_state') ?? 1);
+        $value = (int)($request->query->get('state') ?? 0);
         switch ($value) {
             case 3:
                 $users = $userRepository->readAll();
@@ -156,20 +234,19 @@ class AdminController extends AbstractController
     #[Route('/users_post', methods: ['GET', 'POST'], name: 'users_post')]
     public function usersPost(Request $request, UserRepository $userRepository): Response
     {
-        // дефолтные значения в форме - унёс в форму
-//        $formData = ['_state'=>UserState::NotEnabled];
+        // дефолтные значения в форме
         $form = $this->createForm(UsersFilterFormType::class);
         $form->handleRequest($request);
 
-        $_state = UserState::NotEnabled;
+        $state = UserState::NotEnabled;
         if ( $request->isMethod('POST')) {
             if ($form->isSubmitted() && $form->isValid()) {
-                /** @var UserState $_state */
-                $_state = $form->getData()['_state'];
+                /** @var UserState $state */
+                $state = $form->getData()['state'];
             }
         }
 
-        switch ($_state) {
+        switch ($state) {
             case UserState::All:
                 $users = $userRepository->readAll();
                 $status = -1;
@@ -186,79 +263,120 @@ class AdminController extends AbstractController
         return $this->render('admin/users_post.html.twig', [
             'form' => $form->createView(),
             'users' => $users,
-            'status' =>$status,
+            'status' => $status,
         ]);
     }
 
-    #[Route('/users_ajax', name: 'users_ajax')]
-    public function usersAjax(Request $request, UserRepository $userRepository): Response
+    private function funcUsersSort(UserRepository $userRepository, int $status, int $sortby=null, int $desc=null): array
+    {
+        $users = match ($status) {
+            -1 => $userRepository->readAll(),
+            1  => $userRepository->readByEnabled(1),
+            default => $userRepository->readByEnabled(0),
+        };
+
+        if ( ($sortby !== null) and ($desc !== null) ) {
+            switch ($sortby ) {
+                case 1:
+                    if ( $desc == -1) {
+                        function cmp2(array $a, array $b) {
+                            return $b['id'] <=> $a['id'];
+                        }
+                    } else {
+                        function cmp2(array $a, array $b) {
+                            return $a['id'] <=> $b['id'];
+                        }
+                    }
+                    break;
+                case 2:
+                    if ( $desc == -1) {
+                        function cmp2(array $a, array $b) {
+                            return $b['created_at'] <=> $a['created_at'];
+                        }
+                    } else {
+                        function cmp2(array $a, array $b) {
+                            return $a['created_at'] <=> $b['created_at'];
+                        }
+                    }
+                    break;
+            }
+            usort($users, 'App\Controller\Admin\cmp2');
+        }
+
+        return $users;
+    }
+
+    #[Route('/users_sort', methods: 'POST', name: 'users_sort')]
+    public function usersSort(Request $request, UserRepository $userRepository): Response
     {
         // проверка на AJAX запрос
         if ($request->isXmlHttpRequest()) {
-            // ес-но, что $users можно передать как параметр или в сессию положить...
-            $users = match ($_POST['status']) {
-                '-1' => $userRepository->readAll(),
-                '1'  => $userRepository->readByEnabled(1),
-                default => $userRepository->readByEnabled(0),
-            };
-
-
-            if ( isset( $_POST['sortby'] )) {
-                switch ($_POST['sortby'] ) {
-                    case 1:
-                        if ( $_POST['desc'] == -1) {
-                            function cmp2(array $a, array $b) {
-                                return $b['id'] <=> $a['id'];
-                            }
-                        } else {
-                            function cmp2(array $a, array $b) {
-                                return $a['id'] <=> $b['id'];
-                            }
-                        }
-                        break;
-                    case 2:
-                        if ( $_POST['desc'] == -1) {
-                            function cmp2(array $a, array $b) {
-                                return $b['created_at'] <=> $a['created_at'];
-                            }
-                        } else {
-                            function cmp2(array $a, array $b) {
-                                return $a['created_at'] <=> $b['created_at'];
-                            }
-                        }
-                        break;
-                }
-                usort($users, 'App\Controller\Admin\cmp2');
+            $status = (int)$_POST['status'];
+            $sortby =  $_POST['sortby'];
+            $desc = $_POST['desc'];
+            $users = $this->funcUsersSort($userRepository, $status, $sortby, $desc);
+            if (($sortby !== null) and ($desc !== null)) {
+                return $this->render('admin/_users_table.html.twig', [
+                    'users' => $users,
+                    'status' => $status,
+                    'sortby' => $sortby,
+                    'desc' => $desc,
+                ]);
             }
 
             return $this->render('admin/_users_table.html.twig', [
                 'users' => $users,
-                'status' =>$_POST['status'],
-                'sortby' =>$_POST['sortby'],
-                'desc' => $_POST['desc'],
+                'status' => $status,
             ]);
         }
         return $this->render('admin/_users_table.html.twig', [
             'users' => [],
-            'status' =>0,
+            'status' => 0,
         ]);
     }
 
-    #[Route('/users/{id}/enable', methods: ['GET'], name: 'user_enable')]
-    public function userEnable(int $id, UserRepository $userRepository, ManagerRegistry $doctrine): Response
+    #[Route('/users/{id}/{action}', methods: 'POST', name: 'user_action')]
+    public function userAction(Request $request, int $id, string $action, UserRepository $userRepository, ManagerRegistry $doctrine): Response
     {
-        $user = $userRepository->find($id);
-        if (!$user) {
-            // исключение можно и своё бросить...
-            throw $this->createNotFoundException(
-                'Пользователь не найден, id '.$id
-            );
+        // проверка на AJAX запрос
+        if ($request->isXmlHttpRequest()) {
+            $user = $userRepository->find($id);
+            if (!$user) {
+                // исключение можно и своё бросить...
+                throw $this->createNotFoundException(
+                    'Пользователь не найден, id ' . $id
+                );
+            }
+
+            if ($action == 'enable') {
+                $user->setEnabled();
+                $em = $doctrine->getManager();
+                $em->flush();
+            }
+
+//        return $this->redirectToRoute('users_sort', $request->query->all());
+            $status = (int)$_POST['status'];
+            $sortby =  $_POST['sortby']??null;
+            $desc = $_POST['desc']??null;
+            $users = $this->funcUsersSort($userRepository, $status, $sortby, $desc);
+            if (($sortby !== null) and ($desc !== null)) {
+                return $this->render('admin/_users_table.html.twig', [
+                    'users' => $users,
+                    'status' => $status,
+                    'sortby' => $sortby,
+                    'desc' => $desc,
+                ]);
+            }
+
+            return $this->render('admin/_users_table.html.twig', [
+                'users' => $users,
+                'status' => $status,
+            ]);
         }
-
-        $user->setEnabled();
-        $em = $doctrine->getManager();
-        $em->flush();
-
-        return $this->redirectToRoute('users');
+        return $this->render('admin/_users_table.html.twig', [
+            'users' => [],
+            'status' => 0,
+        ]);
     }
+
 }

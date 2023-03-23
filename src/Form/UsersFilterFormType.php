@@ -14,7 +14,7 @@ class UsersFilterFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('_state', EnumType::class, [
+            ->add('state', EnumType::class, [
                 'class' => UserState::class,
                 'choice_label' => fn ($choice) => match ($choice) {
                     UserState::All => UserState::All->value,
@@ -23,7 +23,6 @@ class UsersFilterFormType extends AbstractType
                 },
                 'data' => UserState::NotEnabled,
                 'label' => 'Статус:',
-//                'label_attr' => [ 'text-align' => 'right'],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Укажите статус пользователя...',

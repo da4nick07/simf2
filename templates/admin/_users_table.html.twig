@@ -50,14 +50,33 @@
                 <td>{{ user.email }}</td>
                 <td>{{ user.roles }}</td>
                 <td>{{ user.enabled }}</td>
-                    <td>
-                            {% if user.enabled == 0 %}
-                                    <a class="btn btn-primary" href="{{ path('user_enable', {'id': user.id}) }}" role="button">Подтвердить</a>
-                            {% endif %}
-                    </td>
+                <td>
+                    {% if user.enabled == 0 %}
+                        {% set murl = path('user_action', {'id': user.id, 'action': 'enable'}) %}
+                        {% if (sortby is defined) %}
+                            <button class="btn btn-primary" type="button"  onClick = "actionUser( '{{ murl }}', {{ status }}, {{ sortby }}, {{ desc }} )">Подтвердить</button>
+                        {% else %}
+                            <button class="btn btn-primary" type="button"  onClick = "actionUser( '{{ murl }}', {{ status }} )">Подтвердить</button>
+                        {% endif %}
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
 
         </tbody>
     </table>
 </div>
+
+<script>
+    function actionUser( murl, status, sortby, desc){
+        $.ajax({
+            url: murl,
+            method: 'post',
+            dataType: 'html',
+            data: {status: status, sortby: sortby, desc: desc},
+            success: function (data) {
+                $("#table").html(data);
+            },
+        });
+    }
+</script>

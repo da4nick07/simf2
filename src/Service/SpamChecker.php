@@ -17,7 +17,7 @@ class SpamChecker
     }
 
     /**
-     * @return int Spam score: 0: not spam, 1: maybe spam, 2: blatant spam
+     * @return int Spam score: 0: not spam, 1: ham, 2: blatant spam
      *
      * @throws \RuntimeException if the call did not work
      */

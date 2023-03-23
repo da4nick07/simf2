@@ -51,7 +51,7 @@
     <script>
         function sortTable( status, sortby, desc, startDate, endDate){
             $.ajax({
-                url: '{{ path('comments_ajax') }}',
+                url: '{{ path('comments_sort') }}',
                 method: 'post',
                 dataType: 'html',
                 data: {status: status, sortby: sortby, desc:desc, startDate:startDate, endDate:endDate},
