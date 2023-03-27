@@ -11,14 +11,14 @@
                 <div class="d-grid">
                     {% if ((sortby is defined) and (sortby == 1)) %}
                         {% if desc == 1 %}
-                            <button class="btn btn-primary" type="button" onClick = "sortTable({{ status }}, 1, -1, '{{ startDate }}', '{{ endDate }}')">id
+                            <button class="btn btn-primary" type="button" onClick = "sortTable({{ status }}, '{{ startDate }}', '{{ endDate }}', 1, -1)">id
                                 <img src="/images/sortl.png" alt="Сортировка"></button>
                         {% else %}
-                            <button class="btn btn-primary" type="button" onClick = "sortTable({{ status }}, 1, 1, '{{ startDate }}', '{{ endDate }}')">id
+                            <button class="btn btn-primary" type="button" onClick = "sortTable({{ status }}, '{{ startDate }}', '{{ endDate }}', 1, 1)">id
                                 <img src="/images/sortb.png" alt="Сортировка"></button>
                         {% endif %}
                     {% else %}
-                        <button class="btn btn-primary" type="button" onClick = "sortTable( {{ status }}, 1, 1, '{{ startDate }}', '{{ endDate }}')">id</button>
+                        <button class="btn btn-primary" type="button" onClick = "sortTable( {{ status }}, '{{ startDate }}', '{{ endDate }}', 1, 1)">id</button>
                     {% endif %}
                 </div>
             </th>
@@ -30,14 +30,14 @@
                 <div class="d-grid">
                     {% if ((sortby is defined) and (sortby == 3)) %}
                         {% if desc == 1 %}
-                            <button class="btn btn-primary" type="button" onClick = "sortTable({{ status }}, 3, -1, '{{ startDate }}', '{{ endDate }}')">created_at
+                            <button class="btn btn-primary" type="button" onClick = "sortTable({{ status }}, '{{ startDate }}', '{{ endDate }}', 3, -1)">created_at
                                 <img src="/images/sortl.png" alt="Сортировка"></button>
                         {% else %}
-                            <button class="btn btn-primary" type="button" onClick = "sortTable({{ status }}, 3, 1, '{{ startDate }}', '{{ endDate }}')">created_at
+                            <button class="btn btn-primary" type="button" onClick = "sortTable({{ status }}, '{{ startDate }}', '{{ endDate }}', 3, 1)">created_at
                                 <img src="/images/sortb.png" alt="Сортировка"></button>
                         {% endif %}
                     {% else %}
-                        <button class="btn btn-primary" type="button" onClick = "sortTable( {{ status }}, 3, 1, '{{ startDate }}', '{{ endDate }}')">created_at</button>
+                        <button class="btn btn-primary" type="button" onClick = "sortTable( {{ status }}, '{{ startDate }}', '{{ endDate }}', 3, 1)">created_at</button>
                     {% endif %}
                 </div>
 
@@ -47,18 +47,19 @@
                 <div class="d-grid">
                     {% if ((sortby is defined) and (sortby == 4)) %}
                         {% if desc == 1 %}
-                            <button class="btn btn-primary" type="button" onClick = "sortTable({{ status }}, 4, -1, '{{ startDate }}', '{{ endDate }}')">email
+                            <button class="btn btn-primary" type="button" onClick = "sortTable({{ status }}, '{{ startDate }}', '{{ endDate }}', 4, -1)">email
                                 <img src="/images/sortl.png" alt="Сортировка"></button>
                         {% else %}
-                            <button class="btn btn-primary" type="button" onClick = "sortTable({{ status }}, 4, 1, '{{ startDate }}', '{{ endDate }}')">email
+                            <button class="btn btn-primary" type="button" onClick = "sortTable({{ status }}, '{{ startDate }}', '{{ endDate }}', 4, 1)">email
                                 <img src="/images/sortb.png" alt="Сортировка"></button>
                         {% endif %}
                     {% else %}
-                        <button class="btn btn-primary" type="button" onClick = "sortTable( {{ status }}, 4, 1, '{{ startDate }}', '{{ endDate }}')">email</button>
+                        <button class="btn btn-primary" type="button" onClick = "sortTable( {{ status }}, '{{ startDate }}', '{{ endDate }}', 4, 1)">email</button>
                     {% endif %}
                 </div>
 
             </th>
+            <th scope="col"></th>
             <th scope="col"></th>
         </tr>
         </thead>
@@ -72,11 +73,26 @@
                 <td>{{ comment.created_at }}</td>
                 <td>{{ comment.email }}</td>
                 <td>
-{#
-                    {% if user.enabled == 0 %}
-                        <a class="btn btn-primary" href="{{ path('user_enable', {'id': user.id}) }}" role="button">Подтвердить</a>
+                    {% if (comment.state == 3) %}
+                        {% set murl = path('comments_action', {'id': comment.id, 'action': 'reject'}) %}
+                        {% if (sortby is defined) %}
+                            <button class="btn btn-primary" type="button"
+                                    onClick = "actionComment( '{{ murl }}', {{ status }}, '{{ startDate }}', '{{ endDate }}', {{ sortby }}, {{ desc }} )">Отклонить</button>
+                        {% else %}
+                            <button class="btn btn-primary" type="button"  onClick = "actionComment( '{{ murl }}', {{ status }}, '{{ startDate }}', '{{ endDate }}' )">Отклонить</button>
+                        {% endif %}
                     {% endif %}
-#}
+                </td>
+                <td>
+                    {% if (comment.state == 3) %}
+                        {% set murl = path('comments_action', {'id': comment.id, 'action': 'publish'}) %}
+                        {% if (sortby is defined) %}
+                            <button class="btn btn-primary" type="button"
+                                    onClick = "actionComment( '{{ murl }}', {{ status }}, '{{ startDate }}', '{{ endDate }}', {{ sortby }}, {{ desc }} )">Опубликовать</button>
+                        {% else %}
+                            <button class="btn btn-primary" type="button"  onClick = "actionComment( '{{ murl }}', {{ status }}, '{{ startDate }}', '{{ endDate }}' )">Опубликовать</button>
+                        {% endif %}
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}
@@ -84,3 +100,16 @@
         </tbody>
     </table>
 </div>
+<script>
+    function actionComment( murl, status, startDate, endDate, sortby, desc){
+        $.ajax({
+            url: murl,
+            method: 'post',
+            dataType: 'html',
+            data: {status: status, sortby: sortby, desc: desc, startDate:startDate, endDate:endDate},
+            success: function (data) {
+                $("#table").html(data);
+            },
+        });
+    }
+</script>

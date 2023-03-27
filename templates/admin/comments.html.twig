@@ -49,12 +49,12 @@
         {% include 'admin/_comments_table.html.twig' %}
     </div>
     <script>
-        function sortTable( status, sortby, desc, startDate, endDate){
+        function sortTable( status, startDate, endDate, sortby, desc){
             $.ajax({
                 url: '{{ path('comments_sort') }}',
                 method: 'post',
                 dataType: 'html',
-                data: {status: status, sortby: sortby, desc:desc, startDate:startDate, endDate:endDate},
+                data: {status: status, startDate:startDate, endDate:endDate, sortby: sortby, desc:desc},
                 success: function (data) {
                     $("#table").html(data);
                 },

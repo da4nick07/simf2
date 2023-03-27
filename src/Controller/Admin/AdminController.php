@@ -68,12 +68,12 @@ class AdminController extends AbstractController
         switch ($sortby) {
             case 1:
                 if ($desc == -1) {
-                    function cmp2(array $a, array $b)
+                    function cmpComments(array $a, array $b)
                     {
                         return $b['id'] <=> $a['id'];
                     }
                 } else {
-                    function cmp2(array $a, array $b)
+                    function cmpComments(array $a, array $b)
                     {
                         return $a['id'] <=> $b['id'];
                     }
@@ -81,12 +81,12 @@ class AdminController extends AbstractController
                 break;
             case 3:
                 if ($desc == -1) {
-                    function cmp2(array $a, array $b)
+                    function cmpComments(array $a, array $b)
                     {
                         return $b['created_at'] <=> $a['created_at'];
                     }
                 } else {
-                    function cmp2(array $a, array $b)
+                    function cmpComments(array $a, array $b)
                     {
                         return $a['created_at'] <=> $b['created_at'];
                     }
@@ -94,19 +94,19 @@ class AdminController extends AbstractController
                 break;
             case 4:
                 if ($desc == -1) {
-                    function cmp2(array $a, array $b)
+                    function cmpComments(array $a, array $b)
                     {
                         return $b['email'] <=> $a['email'];
                     }
                 } else {
-                    function cmp2(array $a, array $b)
+                    function cmpComments(array $a, array $b)
                     {
                         return $a['email'] <=> $b['email'];
                     }
                 }
                 break;
         }
-        usort($comments, 'App\Controller\Admin\cmp2');
+        usort($comments, 'App\Controller\Admin\cmpComments');
 
         return $comments;
     }
@@ -115,52 +115,13 @@ class AdminController extends AbstractController
     #[Route('/comments_sort', methods: 'POST', name: 'comments_sort')]
     public function commentsSort(Request $request, CommentRepository $commentRepository, LoggerInterface $logger): Response
     {
-
         // проверка на AJAX запрос
         if ($request->isXmlHttpRequest()) {
-            // ес-но, что $users можно передать как параметр или в сессию положить...
+            // ес-но, что $comments можно передать как параметр или в сессию положить...
             $comments = $commentRepository->readAllByState($_POST['status'], $_POST['startDate'], $_POST['endDate']);
 
 
             if ( isset( $_POST['sortby'] )) {
-/*
-                switch ($_POST['sortby'] ) {
-                    case 1:
-                        if ( $_POST['desc'] == -1) {
-                            function cmp2(array $a, array $b) {
-                                return $b['id'] <=> $a['id'];
-                            }
-                        } else {
-                            function cmp2(array $a, array $b) {
-                                return $a['id'] <=> $b['id'];
-                            }
-                        }
-                        break;
-                    case 3:
-                        if ( $_POST['desc'] == -1) {
-                            function cmp2(array $a, array $b) {
-                                return $b['created_at'] <=> $a['created_at'];
-                            }
-                        } else {
-                            function cmp2(array $a, array $b) {
-                                return $a['created_at'] <=> $b['created_at'];
-                            }
-                        }
-                        break;
-                    case 4:
-                        if ( $_POST['desc'] == -1) {
-                            function cmp2(array $a, array $b) {
-                                return $b['email'] <=> $a['email'];
-                            }
-                        } else {
-                            function cmp2(array $a, array $b) {
-                                return $a['email'] <=> $b['email'];
-                            }
-                        }
-                        break;
-                }
-                usort($comments, 'App\Controller\Admin\cmp2');
-*/
                 $comments = $this->funcCommentsSort( $comments, (int)$_POST['sortby'], (int)$_POST['desc']);
             }
 
@@ -180,9 +141,9 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/comments/{id}/{action}', methods: ['POST'], name: 'comments_reject')]
+    #[Route('/comments/{id}/{action}', methods: ['POST'], name: 'comments_action')]
     public function commentAction(int $id, string $action, CommentRepository $commentRepository, WorkflowInterface $commentPublishingStateMachine,
-                                  MessageBusInterface $bus, ManagerRegistry $doctrine): Response
+                                  ManagerRegistry $doctrine): Response
     {
         $comment = $commentRepository->find($id);
         if (!$comment) {
@@ -195,17 +156,38 @@ class AdminController extends AbstractController
         switch ($action) {
             case 'reject':
                 if ($commentPublishingStateMachine->can($comment, 'reject')) {
-                    $commentPublishingStateMachine->apply($comment, 'review');
+                    $commentPublishingStateMachine->apply($comment, 'reject');
                     $em = $doctrine->getManager();
                     $em->flush();
-                    $bus->dispatch($comment);
+                }
+                break;
+            case 'publish':
+                if ($commentPublishingStateMachine->can($comment, 'publish')) {
+                    $commentPublishingStateMachine->apply($comment, 'publish');
+                    $em = $doctrine->getManager();
+                    $em->flush();
                 }
                 break;
         }
 
-        $comments = $commentRepository->readAllByState($state->value, $startDate, $endDate);
-        $comments = $this->funcCommentsSort( $comments, (int)$_POST['sortby'], (int)$_POST['desc']);
-        return $this->redirectToRoute('users');
+        $comments = $commentRepository->readAllByState( $_POST['status'], $_POST['startDate'], $_POST['endDate'] );
+        if ( isset( $_POST['sortby'] )) {
+            $comments = $this->funcCommentsSort( $comments, (int)$_POST['sortby'], (int)$_POST['desc']);
+            return $this->render('admin/_comments_table.html.twig', [
+                'comments' => $comments,
+                'status' =>$_POST['status'],
+                'startDate' =>$_POST['startDate'],
+                'endDate' =>$_POST['endDate'],
+                'sortby' =>$_POST['sortby'],
+                'desc' => $_POST['desc'],
+            ]);
+        }
+        return $this->render('admin/_comments_table.html.twig', [
+            'comments' => $comments,
+            'status' =>$_POST['status'],
+            'startDate' =>$_POST['startDate'],
+            'endDate' =>$_POST['endDate'],
+        ]);
     }
 
     #[Route('/users_get', name: 'users_get')]
@@ -279,28 +261,28 @@ class AdminController extends AbstractController
             switch ($sortby ) {
                 case 1:
                     if ( $desc == -1) {
-                        function cmp2(array $a, array $b) {
+                        function cmpUsers(array $a, array $b) {
                             return $b['id'] <=> $a['id'];
                         }
                     } else {
-                        function cmp2(array $a, array $b) {
+                        function cmpUsers(array $a, array $b) {
                             return $a['id'] <=> $b['id'];
                         }
                     }
                     break;
                 case 2:
                     if ( $desc == -1) {
-                        function cmp2(array $a, array $b) {
+                        function cmpUsers(array $a, array $b) {
                             return $b['created_at'] <=> $a['created_at'];
                         }
                     } else {
-                        function cmp2(array $a, array $b) {
+                        function cmpUsers(array $a, array $b) {
                             return $a['created_at'] <=> $b['created_at'];
                         }
                     }
                     break;
             }
-            usort($users, 'App\Controller\Admin\cmp2');
+            usort($users, 'App\Controller\Admin\cmpUsers');
         }
 
         return $users;
