@@ -75,7 +75,7 @@ class CommentRepository extends ServiceEntityRepository
         $conn = $this->getEntityManager()->getConnection();
 
         $stmt = $conn->prepare('
-            SELECT c.id, c.body, c.created_at, u.email
+            SELECT c.id, c.body, c.created_at, u.email, c.state
             FROM comment c
             JOIN user u ON c.user_id = u.id
             WHERE c.state = :st

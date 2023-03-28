@@ -2,12 +2,17 @@
 
 {% form_theme form 'bootstrap_5_layout.html.twig' %}
 
+{% block scripts %}
+    <script src="/js/popper/popper.js"></script>
+    <script src="/js/bootdtrap/bootstrap.min.js"></script>
+{% endblock %}
+
 {% block content %}
     {% if is_granted('ROLE_ADMIN') %}
     <h5 style="text-align: center">Комментарии</h5>
     <br>
 
-    {{ form_start(form, {method: 'POST', action: path('comments')}) }}
+        {{ form_start(form, {method: 'POST', action: path('comments')}) }}
     <div class="row g-3">
         <div class="col">
             {{ form_errors(form) }}

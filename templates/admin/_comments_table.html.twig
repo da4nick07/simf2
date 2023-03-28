@@ -60,7 +60,6 @@
 
             </th>
             <th scope="col"></th>
-            <th scope="col"></th>
         </tr>
         </thead>
         <tbody>
@@ -74,26 +73,32 @@
                 <td>{{ comment.email }}</td>
                 <td>
                     {% if (comment.state == 3) %}
-                        {% set murl = path('comments_action', {'id': comment.id, 'action': 'reject'}) %}
-                        {% if (sortby is defined) %}
-                            <button class="btn btn-primary" type="button"
-                                    onClick = "actionComment( '{{ murl }}', {{ status }}, '{{ startDate }}', '{{ endDate }}', {{ sortby }}, {{ desc }} )">Отклонить</button>
-                        {% else %}
-                            <button class="btn btn-primary" type="button"  onClick = "actionComment( '{{ murl }}', {{ status }}, '{{ startDate }}', '{{ endDate }}' )">Отклонить</button>
-                        {% endif %}
+                        {% set url1 = path('comments_action', {'id': comment.id, 'action': 'reject'}) %}
+                        {% set url2 = path('comments_action', {'id': comment.id, 'action': 'publish'}) %}
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Действие
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    {% if (sortby is defined) %}
+                                        <a class="dropdown-item" href="#" onClick = "actionComment( '{{ url1 }}', {{ status }}, '{{ startDate }}', '{{ endDate }}', {{ sortby }}, {{ desc }} )">Отклонить</a>
+                                    {% else %}
+                                        <a class="dropdown-item" href="#" onClick = "actionComment( '{{ url1 }}', {{ status }}, '{{ startDate }}', '{{ endDate }}' )">Отклонить</a>
+                                    {% endif %}
+                                </li>
+                                <li>
+                                    {% if (sortby is defined) %}
+                                        <a class="dropdown-item" href="#" onClick = "actionComment( '{{ url2 }}', {{ status }}, '{{ startDate }}', '{{ endDate }}', {{ sortby }}, {{ desc }} )">Опубликовать</a>
+                                    {% else %}
+                                        <a class="dropdown-item" href="#" onClick = "actionComment( '{{ url2 }}', {{ status }}, '{{ startDate }}', '{{ endDate }}' )">Опубликовать</a>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </div>
                     {% endif %}
                 </td>
-                <td>
-                    {% if (comment.state == 3) %}
-                        {% set murl = path('comments_action', {'id': comment.id, 'action': 'publish'}) %}
-                        {% if (sortby is defined) %}
-                            <button class="btn btn-primary" type="button"
-                                    onClick = "actionComment( '{{ murl }}', {{ status }}, '{{ startDate }}', '{{ endDate }}', {{ sortby }}, {{ desc }} )">Опубликовать</button>
-                        {% else %}
-                            <button class="btn btn-primary" type="button"  onClick = "actionComment( '{{ murl }}', {{ status }}, '{{ startDate }}', '{{ endDate }}' )">Опубликовать</button>
-                        {% endif %}
-                    {% endif %}
-                </td>
+
             </tr>
         {% endfor %}
 
