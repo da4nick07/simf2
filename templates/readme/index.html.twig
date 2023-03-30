@@ -1,0 +1,18 @@
+{% extends 'base2.html.twig' %}
+
+{% block content %}
+    {% if content_title is defined %}
+        <div class="row">
+            <div class="col text-center my-auto">
+                <h2> {{ content_title }} </h2>
+            </div>
+        </div>
+    {% endif %}
+
+    <div id="readme">
+        {% for line in readme %}
+            {{ line|nl2br }}
+        {% endfor %}
+    </div>
+
+{% endblock %}
