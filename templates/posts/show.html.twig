@@ -4,8 +4,9 @@
 
 {% block content %}
     <p><b>{{ post.title }}</b></p>
-    <p>{{ post.intro }}</p>
-    <p>{{ post.body }}</p>
+    <p>{{ post.intro|nl2br }}</p>
+    <br>
+    <p>{{ post.body|nl2br }}</p>
     <p> <i>&nbsp;&nbsp Автор: {{ post.email }} </i></p>
     <p> <i>&nbsp;&nbsp Дата публикации: {{ post.created_at }} </i></p>
 
