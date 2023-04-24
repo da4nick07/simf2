@@ -2,7 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Class\CommentFilter;
+use App\MClass\CommentFilter;
 use App\Enum\CommentStateType;
 use App\Form\CommentsFilterFormType;
 use App\Form\UsersFilterFormType;
@@ -14,7 +14,11 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Enum\UserState;
@@ -361,4 +365,29 @@ class AdminController extends AbstractController
         ]);
     }
 
+    #[Route('/mail', methods: ['GET'], name: 'admin_mail')]
+    public function mail(MailerInterface $mailer, LoggerInterface $logger): Response
+    {
+        $email = (new Email())
+            ->from(new Address('admin@u146762.test-handyhost.ru'))
+            //->to('vlevkovsky@mail.ru')
+            ->to(new Address('admin@u146762.test-handyhost.ru'))
+            //->cc('cc@example.com')
+            //->bcc('bcc@example.com')
+            //->replyTo('fabien@example.com')
+            //->priority(Email::PRIORITY_HIGH)
+            ->subject('Time for Symfony Mailer!')
+            ->text('Sending emails is fun again!')
+            ->html('<p>See Twig integration for better HTML integration!</p>');
+
+        try {
+            $logger->info('Щас отправлю...!');
+            $mailer->send($email);
+            $logger->info('Письмо отправлено!');
+        } catch (TransportExceptionInterface $e) {
+            $logger->error('Ошибка отправки почты!');
+        }
+
+        return $this->render('admin/base_adm.html.twig');
+    }
 }

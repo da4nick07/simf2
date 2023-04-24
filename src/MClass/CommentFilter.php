@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Class;
+namespace App\MClass;
 
 use App\Enum\CommentStateType;
 use DateTime;

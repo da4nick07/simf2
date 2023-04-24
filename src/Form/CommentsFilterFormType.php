@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Class\CommentFilter;
+use App\MClass\CommentFilter;
 use App\Enum\CommentStateType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
