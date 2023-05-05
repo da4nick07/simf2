@@ -11,6 +11,7 @@ use App\Repository\UserRepository;
 use DateTime;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
+use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -368,10 +369,12 @@ class AdminController extends AbstractController
     #[Route('/mail', methods: ['GET'], name: 'admin_mail')]
     public function mail(MailerInterface $mailer, LoggerInterface $logger): Response
     {
+/*
         $email = (new Email())
-            ->from(new Address('admin@u146762.test-handyhost.ru'))
+//            ->from(new Address('admin@u146762.test-handyhost.ru'))
+            ->from($_ENV['ADMIN_EMAIL'])
             //->to('vlevkovsky@mail.ru')
-            ->to(new Address('admin@u146762.test-handyhost.ru'))
+            ->to($_ENV['ADMIN_EMAIL'])
             //->cc('cc@example.com')
             //->bcc('bcc@example.com')
             //->replyTo('fabien@example.com')
@@ -379,11 +382,19 @@ class AdminController extends AbstractController
             ->subject('Time for Symfony Mailer!')
             ->text('Sending emails is fun again!')
             ->html('<p>See Twig integration for better HTML integration!</p>');
+*/
+        $email = (new NotificationEmail())
+            ->subject('New comment posted')
+            ->htmlTemplate('emails/comment_notification.html.twig')
+            ->from($_ENV['ADMIN_EMAIL'])
+            ->to($_ENV['ADMIN_EMAIL'])
+            ->context(['comment' => 'Это просто лабуда']);
 
         try {
-            $logger->info('Щас отправлю...!');
+//            $logger->info('Щас отправлю...!');
             $mailer->send($email);
-            $logger->info('Письмо отправлено!');
+            // для отладки
+//            $logger->error('Письмо отправлено!');
         } catch (TransportExceptionInterface $e) {
             $logger->error('Ошибка отправки почты!');
         }
