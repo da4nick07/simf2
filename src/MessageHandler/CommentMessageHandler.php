@@ -62,12 +62,12 @@ class CommentMessageHandler
 
             if ( $transition ===  'to_ham') {
                 $email = (new NotificationEmail())
-                    ->subject('New comment posted')
+                    ->subject('New HAM comment posted')
                     ->htmlTemplate('emails/comment_notification.html.twig')
                     ->from($_ENV['ADMIN_EMAIL'])
                     ->to($_ENV['ADMIN_EMAIL'])
                     ->context(['comment' => $comment,
-                                'state' => $comment->getState(),
+                                'state' => $comment->getPublishingPlace(),
                                 'user' => $comment->getUser()->getEmail(),
                         ]);
 

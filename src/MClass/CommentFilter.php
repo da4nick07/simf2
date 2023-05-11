@@ -7,7 +7,7 @@ use DateTime;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class CommentFilter{
-    public ?CommentStateType $state = CommentStateType::DRAFT; // CommentStateType::DRAFT
+    public ?CommentStateType $state = CommentStateType::HAM; // CommentStateType::DRAFT
     private ?\DateTime $startDate;
     // ДВА ДНЯ!!!
     #[Assert\GreaterThanOrEqual(propertyPath:"startDate")]

@@ -30,7 +30,7 @@ class CommentsFilterFormType extends AbstractType
                     CommentStateType::PUBLISHED  => $choice->getName(),
                 },
 
-                'data' => CommentStateType::SUBMITTED,
+                'data' => CommentStateType::HAM,
                 'label' => 'Статус:',
                 'constraints' => [
                     new NotBlank([

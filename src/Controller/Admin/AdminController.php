@@ -43,12 +43,12 @@ class AdminController extends AbstractController
         $form = $this->createForm(CommentsFilterFormType::class, $cf);
         $form->handleRequest($request);
 
-        $state = CommentStateType::SUBMITTED;
+        $state = CommentStateType::HAM;
         $startDate = new \DateTime('-2 days');
         $endDate = new \DateTime('now'); //  23:59:59.999
         if ($request->isMethod('POST')) {
             if ($form->isSubmitted() && $form->isValid()) {
-                /** @var CommentStateType $_state */
+                /** @var CommentStateType $state */
                 $state = $cf->state;
                 $startDate = $cf->getStartDate();
                 $endDate = $cf->endDate;
